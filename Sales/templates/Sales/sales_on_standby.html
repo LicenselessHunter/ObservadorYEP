@@ -1,0 +1,168 @@
+{% extends 'global.html' %}
+{% block title %}Grupos de ventas en espera{% endblock %}
+
+{% block content %}
+
+<div id = "Table-section">
+
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-shop"></i>
+		<h3><b>Grupos de ventas en espera</b></h3>
+	</div>
+
+	<table id = "requests_table" class = "table">
+		<thead>
+			<tr>
+				<th class = "Referencial_header" scope="col">ID</th>
+				<th scope="col">Ingresados por</th>
+				<th scope="col">Fecha de ingreso</th>
+				<th scope="col">Canal de venta</th>
+				<th scope="col">Comparación</th>
+				<th scope="col">Comparado por</th>
+				<th scope="col">Fecha de comparación</th>
+
+
+				<th scope="col"></th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for sales_group in unvalidated_sales_groups %}
+				<tr>
+					<td class = "Referencial_cell"><b>{{ sales_group.id }}</b></td>
+					<td>{{ sales_group.created_by }}</td>
+					<td>{{ sales_group.created_date }}</td>
+					<td>{{ sales_group.sale_marketplace }}</td>
+
+					{% if sales_group.Compared == True %}
+						<td style="color: green;"><b>Realizada</b></td>
+						<td>{{ sales_group.Compared_by }}</td>
+						<td>{{ sales_group.Compared_date }}</td>
+					{% else %}
+						<td style="color: red;"><b>No Realizada</b></td>
+						<td>-</td>
+						<td>-</td>
+					{% endif %}
+
+					<td><a href="{% url 'Sales:SalesGroup_detail' sales_group.id %}"><button style="background-color: #6c757d; border-radius: 0.60rem; color: #fff; border-color: #6c757d;">Examinar</button></a></td>
+
+				</tr>
+			{% endfor %}
+		</tbody>
+
+	</table>
+</div>
+
+<!-- Import Modal -->
+<div
+	class="modal fade"
+	id="import-modal-sale"
+	tabindex="-1"
+	aria-labelledby="enrollLabel"
+	aria-hidden="true"
+>  
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="enrollLabel">Importar archivo</h5>
+				<button
+					type="button"
+					class="btn-close"
+					data-bs-dismiss="modal"
+					aria-label="Close"
+				></button>
+			</div>
+		<div class="modal-body">
+				
+					
+				<form method="POST" enctype="multipart/form-data">
+						{% csrf_token %}
+
+						<p>
+							Para la importación, se deben especificar los sgtes. campos <b>tal cual</b>:
+							<ul>
+								<li>cantidad (Debe ser número positivo entero mayor a 0)</li>
+								<li>venta_bruta (Debe ser 0 o un número positivo entero)</li>
+								<li>numero_venta (Campo de texto, no más de 40 carácteres)</li>
+								<li>fecha_venta (Debe ser formato Fecha)</li>
+								<li>comision (Debe ser 0 o un número positivo entero)</li>
+								<li>costo_despacho (Debe ser 0 o un número positivo entero)</li>
+								<li>SKU (Debe existir en el sistema)</li>
+							</ul>
+						</p>
+
+						<p style ="font-size: 0.9rem;"><b>*Los campos deben estar en la fila 1 de su archivo</b></p>
+						<p style ="font-size: 0.9rem;"><b>*No importa en que orden estén los campos</b></p>
+						<p style ="font-size: 0.9rem;"><b>*No importa en que orden estén las filas</b></p>
+						<p style ="font-size: 0.9rem;"><b>*Debe ser un archivo en formato .xlsx</b></p>
+
+						{{ define_marketplace_for_sales_group_form.as_p }}
+						<p>
+							<input type="file" name="ImportData">
+						</p>
+
+						<button
+						type="button"
+						class="btn btn-secondary"
+						data-bs-dismiss="modal"
+						> Cerrar
+						</button>
+
+						<button type="submit" name="Import" class="btn btn-primary">Importar</button>
+				</form>
+					
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Define sales rows -->
+<div
+	class="modal fade"
+	id="define_sales_row_modal"
+	tabindex="-1"
+	aria-labelledby="enrollLabel"
+	aria-hidden="true"
+>  
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="enrollLabel">Definir cantidad de ventas a introducir</h5>
+				<button
+					type="button"
+					class="btn-close"
+					data-bs-dismiss="modal"
+					aria-label="Close"
+				></button>
+			</div>
+		<div class="modal-body">
+				
+					
+				<form id="define-sales-row-form" method="POST">
+						{% csrf_token %}
+						
+						{{ define_marketplace_for_sales_group_form.as_p }}
+						<label>Cantidad de ventas</label>
+						<input type="number" name="salesQuantity" min="1" max="99" required>
+
+						<button
+						type="button"
+						class="btn btn-secondary"
+						data-bs-dismiss="modal"
+						> Cerrar
+						</button>
+
+						<button type="submit" name="defineSalesQuantity" class="btn btn-primary">Definir ventas</button>
+				</form>
+					
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

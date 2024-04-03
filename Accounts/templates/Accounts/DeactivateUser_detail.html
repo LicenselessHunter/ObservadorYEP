@@ -1,0 +1,41 @@
+{% extends 'global.html' %}
+{% block title %}Detalle de solicitud de desactivación de usuario{% endblock %}
+
+{% block content %}
+
+<div class = "VerticalCenter_container"> <!--ESTE CONTAINER EXISTE CON EL ÚNICO PROPOSITO DE CENTRAR VERTICALMENTE LA SECCIÓN INDIVIDUAL-->
+	<div class="individualSection">
+		<div class = "individualSection_Title">
+			<h2><b>Detalle de solicitud de desactivación de usuario</b></h2>
+		</div>
+
+
+		<div class="individualSection_Body">
+
+
+			<p><img class = "individualSection_image" src="{{ user.profile.profile_image.url }}"></p>
+
+			<ul class = "object_Text" style="list-style: none;">
+				<li><b>Usuario: </b>{{ user }}</li>
+				<li><b>Nombre: </b>{{ user.first_name }} {{ user.last_name }}</li>
+				<li><b>Tipo de usuario: </b>{{ user.profile.user_Type }}</li>
+				<li><b>Correo electrónico: </b>{{ user.profile.email }}</li>
+			</ul>
+			
+			Id solicitud de desactivación: {{ DeactivateRequest.id }}
+
+			<ul class = "user_Text" style="list-style: none;">
+				<li><b>Solicitado por:</b> <p>{{ DeactivateRequest.created_by }} el {{ DeactivateRequest.created_date }}</p></li>
+				
+				{% if DeactivateRequest.validation == True %}
+					<li><b>Validado por:</b> <p>{{ DeactivateRequest.validation_by }} el {{ DeactivateRequest.validation_date }}</p></li>
+				{% endif %}
+			</ul>
+
+		</div>
+
+	</div>
+
+</div>
+
+{% endblock %}

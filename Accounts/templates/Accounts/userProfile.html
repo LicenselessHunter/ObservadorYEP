@@ -1,0 +1,37 @@
+{% extends 'global.html' %}
+{% block title %}Perfil de {{ profile.user }}{% endblock %}
+
+{% block content %}
+
+<div class = "VerticalCenter_container"> <!--ESTE CONTAINER EXISTE CON EL ÚNICO PROPOSITO DE CENTRAR VERTICALMENTE LA SECCIÓN INDIVIDUAL-->
+	<div class="individualSection">
+
+		<div class = "individualSection_Title">
+			<h2><b>Perfil de usuario</b></h2>
+		</div>
+
+		<div class="individualSection_Body">
+
+			<p><img class = "individualSection_image" src="{{ profile.profile_image.url }}"></p>
+
+			<ul class = "object_Text" style="list-style: none;">
+				<li><b>Usuario: </b>{{ profile.user }}</li>
+				<li><b>Nombre: </b>{{ profile.user.first_name }} {{ profile.user.last_name }}</li>
+				<li><b>Tipo de usuario: </b>{{ profile.user_Type }}</li>
+				<li><b>Correo electrónico: </b>{{ profile.user.email }}</li>
+				<li><b>N° de documento: </b>{{ profile.document_number }}</li>
+				<li><b>Celular: </b>{{ profile.cellphone_number }}</li>
+			</ul>
+
+			{% if request.user == profile.user %} <!--Si el usuario actual es igual al usuario que muestra el perfil, entonces el botón de edición de perfil estara disponible-->
+
+				<a href="{% url 'Accounts:modifyMyProfile' %}"><button class="Edit_MyProfile_Button" type="submit">Editar mi perfil</button></a>
+
+			{% endif %}
+
+		</div>  
+
+	</div>
+</div>
+
+{% endblock %}

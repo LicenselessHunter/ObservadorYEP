@@ -1,0 +1,35 @@
+{% extends 'global.html' %}
+{% block title %}Creación de producto PACK{% endblock %}
+
+{% block content %}
+
+<div class = "VerticalCenter_container"> <!--ESTE CONTAINER EXISTE CON EL ÚNICO PROPOSITO DE CENTRAR VERTICALMENTE LA SECCIÓN INDIVIDUAL-->
+	<div class="individualSection">
+
+		<div class = "individualSection_Title">
+			<h2><b>Creación de producto pack</b></h2>
+		</div>
+
+		<div class="individualSection_Body">
+			<form autocomplete="off" class="Pack_form" method="POST">
+				{% csrf_token %}
+				
+				<div class="Product_Form_Container">
+					<p style="text-align:right;">(*) Campo obligatorio</p>
+					{{Product_Form.as_p}}
+				</div>
+
+				<div class="Pack_Form_Container">
+					<h4><b>Definición de SKU hijos</b></h4>
+					{{Pack_Formset.as_p}}
+
+
+					<div class="individualSection_Buttons">
+						<button name = "ConfirmButton" class="Confirm_Button" type="submit">Crear</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

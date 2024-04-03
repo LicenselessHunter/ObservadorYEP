@@ -1,0 +1,58 @@
+{% extends 'global.html' %}
+{% block title %}Validar modificación de canal de venta{% endblock %}
+
+{% block content %}
+
+<div class = "VerticalCenter_container"> <!--ESTE CONTAINER EXISTE CON EL ÚNICO PROPOSITO DE CENTRAR VERTICALMENTE LA SECCIÓN INDIVIDUAL-->
+	<div class="individualSection">
+		<div class = "individualSection_Title">
+			<h2><b>Validar modificación de canal de venta</b></h2>
+		</div>
+
+		<div class="individualSection_Body">
+			<h4>Está a punto de validar la modificación del siguiente canal de venta</h4>
+
+			<h3><b>Canal de venta actual</b></h3>
+
+			<p><img class = "individualSection_image" src="{{ marketplace.marketplace_image.url }}"></p>
+
+			<ul class = "object_Text" style="list-style: none;">
+				<li><b>Nombre canal:</b> {{ marketplace.Marketplace_name }}</li>
+				<li><b>Descripción referencial:</b><p class = "referencial_description_textbox"> {{ marketplace.referencial_description }}</p></li>
+			</ul>
+
+
+
+			<h3><b>Canal de venta con modificación</b></h3>
+
+
+			<p><img class = "individualSection_image" src="{{ ModifyRequest.modified_marketplace_image.url }}"></p>
+
+			<ul class = "object_Text" style="list-style: none;">
+				<li><b>Nombre canal:</b> {{ marketplace.Marketplace_name }}</li>
+				<li><b>Descripción referencial:</b><p class = "referencial_description_textbox"> {{ ModifyRequest.modified_referencial_description }} </p></li>
+			</ul>	
+
+
+
+			Id solicitud de Modificación: {{ ModifyRequest.id }}
+
+			<ul class = "user_Text" style="list-style: none;">
+				<li><b>Solicitado por:</b> <p>{{ ModifyRequest.created_by }} el {{ ModifyRequest.created_date }}</p></li>
+			</ul>
+
+			<div class="individualSection_Buttons">
+				<form method="POST">
+					{% csrf_token %}
+					<button class = "Confirm_Button" name = "validateModification">Validar</button>
+					<button class = "rejectButton" name = "rejectModification">Rechazar</button>
+				</form>
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+{% endblock %}

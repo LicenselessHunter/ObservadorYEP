@@ -1,0 +1,115 @@
+.Dashboard_section {
+	align-items: center;
+	display: flex; 
+	flex-direction: column;
+	white-space: nowrap;
+}
+
+
+.GeneralInformation_container {
+	display: flex;
+	gap: 50px;
+}
+
+.Information_block {
+	text-align: center;
+	min-width: 225px;
+	min-height: 200px;
+	background-color: #ffffff;
+	padding: 1rem;
+	border-radius: 1rem;
+	display:flex; 
+	flex-direction: column; 
+	justify-content: space-evenly;
+}
+
+.dataText_Information_block {
+	font-size: 24px;
+}
+
+.labelText_Information_block {
+	font-size: 16px;
+}
+
+
+.box, .box_commission, .box_shipping_cost, .box_quantity{
+
+	height: 500px; 
+	max-height: 250px; /*Para que el scroll funcione, el max height debe ser siempre menor al height, esto le dira al div que hay contenido que no se muestra y sera forzado a poner un scroll.*/
+	overflow-y: scroll; /*Scrollbar vertical*/
+
+	&::-webkit-scrollbar { /*Scrollbar personalizado*/
+		width: 10px;
+	}
+
+	/* Track */
+	&::-webkit-scrollbar-track {
+		background: #f1f1f1; 
+	}
+	 
+	/* Handle */
+	&::-webkit-scrollbar-thumb {
+		background: #888; 
+	}
+
+	/* Handle on hover */
+	&::-webkit-scrollbar-thumb:hover {
+		background: #555; 
+	}
+
+}
+
+.barTopProducts_container{
+	background-color: #ffffff;
+	border-radius: 1rem;
+	width: 650px;
+	height: 300px;
+	padding: 10px;
+}
+
+
+.container, .container_commission, .container_shipping_cost, .container_quantity{
+	width: 950px;
+	max-width: 950px;
+	overflow-x: visible;
+	padding: 0;
+
+	&::-webkit-scrollbar { /*Scrollbar personalizado*/
+		width: 5px;
+	}
+
+	/* Track */
+	&::-webkit-scrollbar-track {
+		background: #f1f1f1; 
+	}
+	 
+	/* Handle */
+	&::-webkit-scrollbar-thumb {
+		background: #888; 
+	}
+
+	/* Handle on hover */
+	&::-webkit-scrollbar-thumb:hover {
+		background: #555; 
+	}
+
+}
+
+.lineChart_container{
+	padding: 20px;
+	width: 1050px;
+	max-width: 1050px;
+	background-color: #ffffff;
+	border-radius: 1rem;
+}
+
+.containerBody, .containerBody_commission, .containerBody_shipping_cost, .containerBody_quantity{
+	width: 950px;
+	height: 400px;
+}
+
+
+canvas {
+	background-color: #ffffff;
+	border-radius: 1rem;
+}

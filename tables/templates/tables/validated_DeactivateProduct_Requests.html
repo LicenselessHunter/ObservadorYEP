@@ -1,0 +1,45 @@
+{% extends 'global.html' %}
+{% block title %}Desactivación de productos validadas{% endblock %}
+
+{% block content %}
+
+<div id = "Table-section">
+
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-shop"></i>
+		<h3><b>Desactivación de productos validadas</b></h3>
+	</div>
+
+	<table id = "requests_table" class = "table">
+		<thead>
+			<tr>
+				<th class = "Referencial_header" scope="col">ID</th>
+				<th scope="col">SKU</th>
+				<th scope="col">Descripción</th>
+				<th scope="col">Solicitado por</th>
+				<th scope="col">Fecha de solicitud</th>
+				<th scope="col">Validado por</th>
+				<th scope="col">Fecha de validación</th>
+				<th scope="col"></th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for DeactivateRequest in validated_DeactivateProduct_Requests %}
+				<tr style="background-color: #E3FFE7;">
+					<td class = "Referencial_cell"><b>{{ DeactivateRequest.id }}</b></td>
+					<td>{{ DeactivateRequest.id_product.SKU }}</td>
+					<td>{{ DeactivateRequest.id_product.Description }}</td>
+					<td>{{ DeactivateRequest.created_by }}</td>
+					<td>{{ DeactivateRequest.created_date }}</td>
+					<td>{{ DeactivateRequest.validation_by }}</td>
+					<td>{{ DeactivateRequest.validation_date }}</td>
+					<td><a href="{% url 'tables:DeactivateProduct_detail' DeactivateRequest.id %}"><button style="background-color: #6c757d; border-radius: 0.60rem; color: #fff; border-color: #6c757d;">Detalle</button></a></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+
+	</table>
+</div>
+
+{% endblock %}

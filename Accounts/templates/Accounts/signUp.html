@@ -1,0 +1,34 @@
+{% load static %} <!--Módulo para static files-->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Registro</title>
+	<link rel="stylesheet" href="{% static 'signup.css' %}">
+</head>
+<body>
+
+	<div class ="container">
+		<H1>Registro</H1>
+
+		<form method="post" autocomplete="off"> 
+			{% csrf_token %} <!-- token de seguridad que servira para que se sepa que el request fue mandado por esta aplicación y no otra-->
+			{{signUpform.as_p}}
+
+
+			{% if messages %}
+				{% for message in messages %}
+					<div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+						{{ message }}
+					</div>
+				{% endfor %}
+			{% endif %}
+
+
+			{{invite_SignUpForm.as_p}}
+
+			<input class="Signup-btn" type="submit" value="Registrarse"> <!-- Boton predeterminado "submit" con nombre "Signup" escrito adentro-->
+		</form>
+
+	</div>
+</body>

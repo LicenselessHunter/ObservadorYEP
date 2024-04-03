@@ -1,0 +1,23 @@
+#Marketplace-Table {
+	background-color: #ffffff;
+	margin-top: 7px;
+}
+
+
+#Marketplace-Table thead tr{
+	color: #ffffff;
+	background-color: #474747;
+	font-weight: bold;
+	border-bottom: 4px solid #E3E3E3; /*Una rayita gris que se pone abajo de un row*/
+
+}
+
+#Marketplace-Table tbody tr {
+	border-bottom: 4px solid #E3E3E3; /*Una rayita gris que se pone abajo de un row*/
+
+}
+
+.marketplace-thumbnail {
+	width: 80px;
+	height: 70px;
+}

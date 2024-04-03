@@ -1,0 +1,55 @@
+{% extends 'global.html' %}
+{% block title %}Solicitudes de modificación de canales de venta{% endblock %}
+
+{% block content %}
+
+<div id = "Table-section">
+
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-shop"></i>
+		<h3><b>Solicitudes de modificación de canales de venta</b></h3>
+	</div>
+
+	<table id = "requests_table" class = "table">
+		<thead>
+			<tr>
+				<th class = "Referencial_header" scope="col">ID</th>
+				<th scope="col">Nombre canal</th>
+				<th scope="col">Solicitado por</th>
+				<th scope="col">Fecha de solicitud</th>
+				<th scope="col"></th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for ModifyRequest in unvalidated_ModifyMarketplace_Requests %}
+				<tr>
+					<td class = "Referencial_cell"><b>{{ ModifyRequest.id }}</b></td>
+					<td>{{ ModifyRequest.id_marketplace.Marketplace_name }}</td>
+					<td>{{ ModifyRequest.created_by }}</td>
+					<td>{{ ModifyRequest.created_date }}</td>
+					
+					<td>
+						<div class="dropdown_individual_commands">
+							<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuModifyProduct_requests" data-bs-toggle="dropdown" aria-expanded="false">
+							</button>
+
+							<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuModifyProduct_requests">
+								<li><a href="{% url 'marketplaces:ModifyMarketplace_detail' ModifyRequest.id %}" class="dropdown-item">Detalle</a></li>
+								
+								{% if request.user.profile.user_Type == "Administrador" %}
+									<li><a href="{% url 'marketplaces:validate_marketplace_modification' ModifyRequest.id %}" class="dropdown-item">Decidir</a></li>
+								{% endif %}
+							</ul>
+						</div>
+					</td>
+				
+
+				</tr>
+			{% endfor %}
+		</tbody>
+
+	</table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% load static %} <!--Módulo para static files-->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ingreso</title>
+	<link rel="stylesheet" href="{% static 'login.css' %}"> 
+</head>
+<body>
+
+	<div class ="container">
+		<H1>Ingreso</H1>
+
+		<form id = "login-form" method="post" autocomplete="off"> 
+	    	{% csrf_token %} <!-- token de seguridad que servira para que se sepa que el request fue mandado por esta aplicación y no otra-->
+			{{form.as_p}}<!--Se escribe data de la instancia "form". Se va aponer el formulario mismo-->
+			<input class="Login-btn" type="submit" value="Ingresar"> <!-- Boton predeterminado "submit" con nombre "Signup" escrito adentro-->
+		</form>
+
+	</div>
+</body>
+</html>

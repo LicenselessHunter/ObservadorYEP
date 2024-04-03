@@ -1,0 +1,1084 @@
+{% extends 'global.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class = "Dashboard_section">
+
+	<div style="width:1050px; border-bottom: 2px solid #595959; margin-bottom: 10px;">
+		<text style="text-align: left; color: #595959"><b>índices generales</b></text>
+	</div>
+
+	<div class = "GeneralInformation_container">
+		<div style = "display:flex; flex-direction: column; justify-content: space-evenly" class = "Information_block">
+			<p class = "dataText_Information_block"><b>${% if Totals.Total_gross_sales != None %} {{ Totals.Total_gross_sales }} {% else %} 0 {% endif %}</b></p>
+			<p class = "labelText_Information_block">Total ventas brutas</p>
+		</div>
+
+		<div class = "Information_block">
+			<p class = "dataText_Information_block"><b>${% if Totals.Total_commission != None %} {{ Totals.Total_commission }} {% else %} 0 {% endif %}</b></p>
+			<p class = "labelText_Information_block">Total comisión</p>
+		</div>
+
+		<div class = "Information_block">
+			<p class = "dataText_Information_block"><b>${% if Totals.Total_shipping_cost != None %} {{ Totals.Total_shipping_cost }} {% else %} 0 {% endif %}</b></p>
+			<p class = "labelText_Information_block">Total costos de envío</p>
+		</div>
+
+		<div class = "Information_block">
+			<p class = "dataText_Information_block"><b>{% if Totals.Total_sales_quantity != None %} {{ Totals.Total_sales_quantity }} {% else %} 0 {% endif %}</b></p>
+			<p class = "labelText_Information_block">Total cantidad vendida</p>
+		</div>
+	</div>
+
+	<select id="mystuff" style="font-size: 14px; border:0; margin-top: 30px;">
+		<option value="0"><b>Elegir campo</b></option>       
+		<option value="opt1">Venta bruta</option>
+		<option value="opt2">Comisión</option>
+		<option value="opt3">Costo de envío</option>
+		<option value="opt4">Cantidad</option>
+	</select>
+
+
+
+
+	<div class="mystaff_hide mystaff_opt1">
+
+		<div style="width:1050px; border-bottom: 2px solid #595959; margin-bottom: 10px;">
+			<text style="text-align: left; color: #595959"><b>Venta bruta</b></text>
+		</div>
+
+		<div style ="display: flex; flex-direction: row; gap: 50px;">
+
+			<div class="barTopProducts_container">
+
+				<select onchange="updateChart(this)" style="width: 115px; font-size: 14px; font-weight: bold; border:0;">
+						<option value="global">Global</option>
+					{% for marketplace in Marketplaces %}
+						<option value="{{ marketplace.Marketplace_name|cut:' ' }}">{{ marketplace.Marketplace_name }}</option>
+					{% endfor %}
+				</select>
+				<div class = "box"> <!-- Div que va a dar el scroll -->
+					<div class = "subbox"> <!-- Div que se encargara del tamaño del gráfico -->
+
+						<canvas id="barTopProducts"></canvas>
+
+					</div>
+				</div>
+			</div>
+	
+
+			<script>
+
+
+
+
+				const values = [
+
+
+
+					{% for product in products %}
+						{
+							productLabel: { global: '{{product.Description}} ({{product.SKU}})'}, productData: { global: {% if product.gross_sale_byProduct != None %} {{product.gross_sale_byProduct}} {% else %} 0 {% endif %}}
+						},
+					{% endfor %},
+
+
+					{% for product in productsByMarketplace %}
+						{
+							productLabel: { {{ product.sale__Sale_group__sale_marketplace|cut:' ' }}: '{{product.Description}} ({{product.SKU}})'}, productData: { {{product.sale__Sale_group__sale_marketplace|cut:' ' }}: {{product.gross_sale_byProduct}}}
+						},
+					{% endfor %}
+
+
+				]
+
+
+
+				const myChart = new Chart("barTopProducts", {
+					type: 'bar',
+					data: {
+						//labels: [{% for marketplace in Marketplaces %} '{{marketplace}}', {% endfor %}],
+						datasets: [{
+							label: "Venta bruta",
+							data: values,
+							backgroundColor: ['lightblue'],
+							parsing: {
+								xAxisKey: 'productData.global',
+								yAxisKey: 'productLabel.global'
+							}
+
+
+						}]
+					},
+					options: {
+						maintainAspectRatio: false, /*Maintain the original canvas aspect ratio (width / height) when resizing. No nos interesa tenerlo activado ya que vamos a usar el tamaño definido por el subbox*/
+						indexAxis: 'y',
+						responsive: true,
+						plugins: {
+							legend: {
+								display: false
+							},
+							tooltip: {
+								callbacks: {
+									label: function(context) {
+										let label = context.dataset.label || '';
+
+										if (label) {
+											label += ': ';
+										}
+										if (context.parsed.y !== null) {
+											label += new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(context.parsed.x);
+										}
+										return label;
+									}
+								}
+							},
+							title: {
+								display: true,
+								text: 'Productos ordenados por venta bruta generada'
+							}
+
+						}
+					}
+				});
+
+
+
+				function updateChart(option){
+					console.log(option.value);
+
+					myChart.data.datasets[0].parsing.xAxisKey = `productData.${option.value}`;
+
+					myChart.data.labels = [];
+
+					myChart.data.datasets[0].parsing.yAxisKey = `productLabel.${option.value}`;
+					
+					myChart.update();
+				}
+
+
+				const subbox = document.querySelector('.subbox'); /*Se define el tamaño del gráfico*/
+				subbox.style.height ='300px';
+				subbox.style.width ='550px';
+
+				if (myChart.data.labels.length > 7){ /*Si hay más de 7 labels*/
+
+					//Estas dos líneas son para incrementar la altura del gráfico cuando se agregue más data, esto mantiene el incremento de altura consistente, sin esto, se va a llegar a un punto en que el gráfico no se podrá leer.
+					const newHeight = 300 + ((myChart.data.labels.length - 7) * 30);
+					subbox.style.height = `${newHeight}px`;
+				}
+
+
+			</script>
+
+			<canvas id="DonutChart" style="width:100%; max-width:350px; max-height: 300px;"></canvas>
+
+			<script type="text/javascript">
+
+
+				var barColors = ["#F86877", "#25BDA9", "#FFB029", "#4DA6FF","#F5EA51"];
+
+
+				new Chart("DonutChart", {
+					type: "doughnut",
+					data: {
+						labels: [{% for marketplace in Marketplaces %} '{{marketplace}}', {% endfor %}],
+						datasets: [{
+							backgroundColor: barColors,
+							data: [{% for marketplace in Marketplaces %} {% if marketplace.Total_gross_sales_by_marketplace != None %} {{ marketplace.Total_gross_sales_by_marketplace }} {% else %} 0 {% endif %}, {% endfor %}]
+						}]
+					},
+					options: {
+						plugins: {
+							legend: {
+								position: 'right',
+							},
+							tooltip: {
+								callbacks: {
+									label: function(context) {
+										let label = context.label || '';
+
+										if (label) {
+											label += ': ';
+										}
+										if (context.parsed !== null) {
+											label += new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(context.parsed);
+										}
+										return label;
+									}
+								}
+							},
+							title: {
+								display: true,
+								text: "Venta bruta total por canal de venta"
+							}
+						}
+					}
+				});
+
+			</script>
+
+		</div>
+
+		<div style="margin-top: 30px;">
+
+			<div class="lineChart_container">
+				<div class = "container"> <!-- Div que va a dar el scroll -->
+					<div class = "containerBody"> <!-- Div que se encargara del tamaño del gráfico -->
+						<canvas id="lineChart"></canvas>
+						<!--<canvas id="lineChart" style="width:100%; max-height: 400px;"></canvas>-->
+					</div>
+				</div>
+			</div>
+			
+			<script type="text/javascript">
+
+				var lineColors = ["#F86877", "#25BDA9", "#FFB029", "#4DA6FF","#F5EA51"];
+
+				chartId = new Chart("lineChart", {
+					type: "line",
+					data: {
+						labels: [{% for sale in Sales_TotalbyDay %} {% if sale.gross_sales_byDay != 0 %} '{{ sale.sale_date }}' ,{% endif %} {% endfor %}],
+						datasets: [
+
+							{% for marketplace in Marketplaces %}
+								{
+									label: '{{ marketplace.Marketplace_name }}',
+									data: [{% for sale in Marketplaces_sales_byDay %} {% if sale.Marketplace_name == marketplace.Marketplace_name %} {x: '{{ sale.sales_group__sale__sale_date }}', y: {{ sale.gross_sales_byDay }}} ,{% endif %} {% endfor %}],
+									borderColor: lineColors[{{forloop.counter0}}],
+									backgroundColor: lineColors[{{forloop.counter0}}],
+									pointBackgroundColor: lineColors[{{forloop.counter0}}],
+									fill: false
+								},
+							{% endfor %}
+
+						]
+					},
+					options: {
+						maintainAspectRatio: false,
+						legend: {display: false},
+						plugins: {
+							tooltip: {
+								callbacks: {
+									label: function(context) {
+										let label = context.dataset.label || '';
+
+										if (label) {
+											label += ': ';
+										}
+										if (context.parsed.y !== null) {
+											label += new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(context.parsed.y);
+										}
+										return label;
+									}
+								}
+							},
+							title: {
+								display: true,
+								text: 'Venta bruta diaria por canal de venta'
+							}
+						}
+					}
+				});
+
+
+				const containerBody = document.querySelector('.containerBody'); 
+				const container = document.querySelector('.container');
+
+				if (chartId.data.labels.length > 30){ /*Si hay más de 7 labels*/
+
+					container.style.overflowX = "scroll";
+
+					//Estas dos líneas son para incrementar la altura del gráfico cuando se agregue más data, esto mantiene el incremento de altura consistente, sin esto, se va a llegar a un punto en que el gráfico no se podrá leer.
+					const newWidth = 950 + ((chartId.data.labels.length - 30) * 30);
+					containerBody.style.width = `${newWidth}px`;
+				}
+
+			</script>
+
+		</div>
+
+	</div>
+
+
+
+
+
+
+
+	<!--- GRAFICOS COMISIÓN ---->
+	<div class="mystaff_hide mystaff_opt2">
+
+		<div style="width:1050px; border-bottom: 2px solid #595959; margin-bottom: 10px;">
+			<text style="text-align: left; color: #595959"><b>Comisión</b></text>
+		</div>
+
+		<div style ="display: flex; flex-direction: row; gap: 50px;">
+
+
+			<div class="barTopProducts_container">
+
+				<select onchange="updateChart_comission(this)" style="width: 115px; font-size: 14px; font-weight: bold; border:0;">
+						<option value="global">Global</option>
+					{% for marketplace in Marketplaces %}
+						<option value="{{ marketplace.Marketplace_name|cut:' ' }}">{{ marketplace.Marketplace_name }}</option>
+					{% endfor %}
+				</select>
+				<div class = "box_commission"> <!-- Div que va a dar el scroll -->
+					<div class = "subbox_commission"> <!-- Div que se encargara del tamaño del gráfico -->
+
+						<canvas id="barTopProducts_commission"></canvas>
+
+					</div>
+				</div>
+			</div>
+	
+
+			<script>
+
+
+				const values_commission = [
+
+
+
+					{% for product in products_commission %}
+						{
+							productLabel: { global: '{{product.Description}} ({{product.SKU}})'}, productData: { global: {% if product.commission_byProduct != None %} {{product.commission_byProduct}} {% else %} 0 {% endif %}}
+						},
+					{% endfor %},
+
+
+					{% for product in productsByMarketplace_commission %}
+						{
+							productLabel: { {{ product.sale__Sale_group__sale_marketplace|cut:' ' }}: '{{product.Description}} ({{product.SKU}})'}, productData: { {{product.sale__Sale_group__sale_marketplace|cut:' ' }}: {{product.commission_byProduct}}}
+						},
+					{% endfor %}
+
+
+				]
+
+
+
+				const myChart_commission = new Chart("barTopProducts_commission", {
+					type: 'bar',
+					data: {
+						//labels: [{% for marketplace in Marketplaces %} '{{marketplace}}', {% endfor %}],
+						datasets: [{
+							label: "Comisión",
+							data: values_commission,
+							backgroundColor: ['lightblue'],
+							parsing: {
+								xAxisKey: 'productData.global',
+								yAxisKey: 'productLabel.global'
+							}
+
+
+						}]
+					},
+					options: {
+						maintainAspectRatio: false, /*Maintain the original canvas aspect ratio (width / height) when resizing. No nos interesa tenerlo activado ya que vamos a usar el tamaño definido por el subbox*/
+						indexAxis: 'y',
+						responsive: true,
+						plugins: {
+							legend: {
+								display: false
+							},
+							tooltip: {
+								callbacks: {
+									label: function(context) {
+										let label = context.dataset.label || '';
+
+										if (label) {
+											label += ': ';
+										}
+										if (context.parsed.y !== null) {
+											label += new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(context.parsed.x);
+										}
+										return label;
+									}
+								}
+							},
+							title: {
+								display: true,
+								text: 'Productos ordenados por comisión generada'
+							}
+
+						}
+					}
+				});
+
+
+
+				function updateChart_comission(option){
+					console.log(option.value);
+
+					myChart_commission.data.datasets[0].parsing.xAxisKey = `productData.${option.value}`;
+
+					myChart_commission.data.labels = [];
+
+					myChart_commission.data.datasets[0].parsing.yAxisKey = `productLabel.${option.value}`;
+					
+					myChart_commission.update();
+				}
+
+
+				const subbox_commission = document.querySelector('.subbox_commission'); /*Se define el tamaño del gráfico*/
+				subbox_commission.style.height ='300px';
+				subbox_commission.style.width ='550px';
+
+				if (myChart_commission.data.labels.length > 7){ /*Si hay más de 7 labels*/
+
+					//Estas dos líneas son para incrementar la altura del gráfico cuando se agregue más data, esto mantiene el incremento de altura consistente, sin esto, se va a llegar a un punto en que el gráfico no se podrá leer.
+					const newHeight_commission = 300 + ((myChart_commission.data.labels.length - 7) * 30);
+					subbox_commission.style.height = `${newHeight_commission}px`;
+				}
+
+
+			</script>
+
+			<canvas id="DonutChartCommission" style="width:100%; max-width:350px; max-height: 300px;"></canvas>
+
+			<script type="text/javascript">
+
+
+				var barColors = ["#F86877", "#25BDA9", "#FFB029", "#4DA6FF","#F5EA51"];
+
+
+				new Chart("DonutChartCommission", {
+					type: "doughnut",
+					data: {
+						labels: [{% for marketplace in Marketplaces %} '{{marketplace}}', {% endfor %}],
+						datasets: [{
+							backgroundColor: barColors,
+							data: [{% for marketplace in Marketplaces %} {% if marketplace.Total_commission_by_marketplace != None %} {{ marketplace.Total_commission_by_marketplace }} {% else %} 0 {% endif %}, {% endfor %}]
+						}]
+					},
+					options: {
+						plugins: {
+							legend: {
+								position: 'right',
+							},
+							tooltip: {
+								callbacks: {
+									label: function(context) {
+										let label = context.label || '';
+
+										if (label) {
+											label += ': ';
+										}
+										if (context.parsed !== null) {
+											label += new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(context.parsed);
+										}
+										return label;
+									}
+								}
+							},
+							title: {
+								display: true,
+								text: "Comisión total por canal de venta"
+							}
+						}
+					}
+				});
+
+			</script>
+
+		</div>
+
+
+
+
+		<div style="margin-top: 30px;">
+
+			<div class="lineChart_container">
+				<div class = "container_commission"> <!-- Div que va a dar el scroll -->
+					<div class = "containerBody_commission"> <!-- Div que se encargara del tamaño del gráfico -->
+						<canvas id="lineChart_Commission"></canvas>
+						<!--<canvas id="lineChart" style="width:100%; max-height: 400px;"></canvas>-->
+					</div>
+				</div>
+			</div>
+			
+			<script type="text/javascript">
+
+				var lineColors = ["#F86877", "#25BDA9", "#FFB029", "#4DA6FF","#F5EA51"];
+
+				chartId = new Chart("lineChart_Commission", {
+					type: "line",
+					data: {
+						labels: [{% for sale in Sales_TotalbyDay %} {% if sale.commission_byDay != 0 %} '{{ sale.sale_date }}' ,{% endif %} {% endfor %}],
+						datasets: [
+
+							{% for marketplace in Marketplaces %}
+								{
+									label: '{{ marketplace.Marketplace_name }}',
+									data: [{% for sale in Marketplaces_sales_byDay %} {% if sale.Marketplace_name == marketplace.Marketplace_name %} {x: '{{ sale.sales_group__sale__sale_date }}', y: {{ sale.commission_byDay }}} ,{% endif %} {% endfor %}],
+									borderColor: lineColors[{{forloop.counter0}}],
+									backgroundColor: lineColors[{{forloop.counter0}}],
+									pointBackgroundColor: lineColors[{{forloop.counter0}}],
+									fill: false
+								},
+							{% endfor %}
+
+						]
+					},
+					options: {
+						maintainAspectRatio: false,
+						legend: {display: false},
+						plugins: {
+							tooltip: {
+								callbacks: {
+									label: function(context) {
+										let label = context.dataset.label || '';
+
+										if (label) {
+											label += ': ';
+										}
+										if (context.parsed.y !== null) {
+											label += new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(context.parsed.y);
+										}
+										return label;
+									}
+								}
+							},
+							title: {
+								display: true,
+								text: 'Comisión diaria por canal de venta'
+							}
+						}
+					}
+				});
+
+
+				const containerBody_commission = document.querySelector('.containerBody_commission'); 
+				const container_commission = document.querySelector('.container_commission');
+
+				if (chartId.data.labels.length > 30){ /*Si hay más de 7 labels*/
+
+					container_commission.style.overflowX = "scroll";
+
+					//Estas dos líneas son para incrementar la altura del gráfico cuando se agregue más data, esto mantiene el incremento de altura consistente, sin esto, se va a llegar a un punto en que el gráfico no se podrá leer.
+					const newWidth_commission = 950 + ((chartId.data.labels.length - 30) * 30);
+					containerBody_commission.style.width = `${newWidth_commission}px`;
+				}
+
+			</script>
+
+		</div>
+
+
+
+	</div>
+
+
+
+
+
+	<!--- GRAFICOS COSTOS DE ENVÍO ---->
+	<div class="mystaff_hide mystaff_opt3">
+
+		<div style="width:1050px; border-bottom: 2px solid #595959; margin-bottom: 10px;">
+			<text style="text-align: left; color: #595959"><b>Costos de envío</b></text>
+		</div>
+
+		<div style ="display: flex; flex-direction: row; gap: 50px;">
+
+			<div class="barTopProducts_container">
+
+				<select onchange="updateChart_shipping_cost(this)" style="width: 115px; font-size: 14px; font-weight: bold; border:0;">
+						<option value="global">Global</option>
+					{% for marketplace in Marketplaces %}
+						<option value="{{ marketplace.Marketplace_name|cut:' ' }}">{{ marketplace.Marketplace_name }}</option>
+					{% endfor %}
+				</select>
+				<div class = "box_shipping_cost"> <!-- Div que va a dar el scroll -->
+					<div class = "subbox_shipping_cost"> <!-- Div que se encargara del tamaño del gráfico -->
+
+						<canvas id="barTopProducts_shipping_cost"></canvas>
+
+					</div>
+				</div>
+			</div>
+	
+
+			<script>
+
+
+				const values_shipping_cost = [
+
+
+
+					{% for product in products_shipping_cost %}
+						{
+							productLabel: { global: '{{product.Description}} ({{product.SKU}})'}, productData: { global: {% if product.shipping_cost_byProduct != None %} {{product.shipping_cost_byProduct}} {% else %} 0 {% endif %}}
+						},
+					{% endfor %},
+
+
+					{% for product in productsByMarketplace_shipping_cost %}
+						{
+							productLabel: { {{ product.sale__Sale_group__sale_marketplace|cut:' ' }}: '{{product.Description}} ({{product.SKU}})'}, productData: { {{product.sale__Sale_group__sale_marketplace|cut:' ' }}: {{product.shipping_cost_byProduct}}}
+						},
+					{% endfor %}
+
+
+				]
+
+
+
+				const myChart_shipping_cost = new Chart("barTopProducts_shipping_cost", {
+					type: 'bar',
+					data: {
+						//labels: [{% for marketplace in Marketplaces %} '{{marketplace}}', {% endfor %}],
+						datasets: [{
+							label: "Costos de envío",
+							data: values_shipping_cost,
+							backgroundColor: ['lightblue'],
+							parsing: {
+								xAxisKey: 'productData.global',
+								yAxisKey: 'productLabel.global'
+							}
+
+
+						}]
+					},
+					options: {
+						maintainAspectRatio: false, /*Maintain the original canvas aspect ratio (width / height) when resizing. No nos interesa tenerlo activado ya que vamos a usar el tamaño definido por el subbox*/
+						indexAxis: 'y',
+						responsive: true,
+						plugins: {
+							legend: {
+								display: false
+							},
+							tooltip: {
+								callbacks: {
+									label: function(context) {
+										let label = context.dataset.label || '';
+
+										if (label) {
+											label += ': ';
+										}
+										if (context.parsed.y !== null) {
+											label += new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(context.parsed.x);
+										}
+										return label;
+									}
+								}
+							},
+							title: {
+								display: true,
+								text: 'Productos ordenados por costo de envío generado'
+							}
+
+						}
+					}
+				});
+
+
+
+				function updateChart_shipping_cost(option){
+					console.log(option.value);
+
+					myChart_shipping_cost.data.datasets[0].parsing.xAxisKey = `productData.${option.value}`;
+
+					myChart_shipping_cost.data.labels = [];
+
+					myChart_shipping_cost.data.datasets[0].parsing.yAxisKey = `productLabel.${option.value}`;
+					
+					myChart_shipping_cost.update();
+				}
+
+
+				const subbox_shipping_cost = document.querySelector('.subbox_shipping_cost'); /*Se define el tamaño del gráfico*/
+				subbox_shipping_cost.style.height ='300px';
+				subbox_shipping_cost.style.width ='550px';
+
+				if (myChart_shipping_cost.data.labels.length > 7){ /*Si hay más de 7 labels*/
+
+					//Estas dos líneas son para incrementar la altura del gráfico cuando se agregue más data, esto mantiene el incremento de altura consistente, sin esto, se va a llegar a un punto en que el gráfico no se podrá leer.
+					const newHeight_shipping_cost = 300 + ((myChart_shipping_cost.data.labels.length - 7) * 30);
+					subbox_shipping_cost.style.height = `${newHeight_shipping_cost}px`;
+				}
+
+
+			</script>
+
+
+			<canvas id="DonutChartShipping_cost" style="width:100%; max-width:350px; max-height: 300px;"></canvas>
+
+			<script type="text/javascript">
+
+
+				var barColors = ["#F86877", "#25BDA9", "#FFB029", "#4DA6FF","#F5EA51"];
+
+
+				new Chart("DonutChartShipping_cost", {
+					type: "doughnut",
+					data: {
+						labels: [{% for marketplace in Marketplaces %} '{{marketplace}}', {% endfor %}],
+						datasets: [{
+							backgroundColor: barColors,
+							data: [{% for marketplace in Marketplaces %} {% if marketplace.Total_shipping_cost_by_marketplace != None %} {{ marketplace.Total_shipping_cost_by_marketplace }} {% else %} 0 {% endif %}, {% endfor %}]
+						}]
+					},
+					options: {
+						plugins: {
+							legend: {
+								position: 'right',
+							},
+							tooltip: {
+								callbacks: {
+									label: function(context) {
+										let label = context.label || '';
+
+										if (label) {
+											label += ': ';
+										}
+										if (context.parsed !== null) {
+											label += new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(context.parsed);
+										}
+										return label;
+									}
+								}
+							},
+							title: {
+								display: true,
+								text: "Costo de envío total por canal de venta"
+							}
+						}
+					}
+				});
+
+			</script>
+
+		</div>
+
+
+		<div style="margin-top: 30px;">
+
+			<div class="lineChart_container">
+				<div class = "container_shipping_cost"> <!-- Div que va a dar el scroll -->
+					<div class = "containerBody_shipping_cost"> <!-- Div que se encargara del tamaño del gráfico -->
+						<canvas id="lineChart_shipping_cost"></canvas>
+						<!--<canvas id="lineChart" style="width:100%; max-height: 400px;"></canvas>-->
+					</div>
+				</div>
+			</div>
+			
+			<script type="text/javascript">
+
+				var lineColors = ["#F86877", "#25BDA9", "#FFB029", "#4DA6FF","#F5EA51"];
+
+				chartId = new Chart("lineChart_shipping_cost", {
+					type: "line",
+					data: {
+						labels: [{% for sale in Sales_TotalbyDay %} {% if sale.shipping_cost_byDay != 0 %} '{{ sale.sale_date }}' ,{% endif %} {% endfor %}],
+						datasets: [
+
+							{% for marketplace in Marketplaces %}
+								{
+									label: '{{ marketplace.Marketplace_name }}',
+									data: [{% for sale in Marketplaces_sales_byDay %} {% if sale.Marketplace_name == marketplace.Marketplace_name %} {x: '{{ sale.sales_group__sale__sale_date }}', y: {{ sale.shipping_cost_byDay }}} ,{% endif %} {% endfor %}],
+									borderColor: lineColors[{{forloop.counter0}}],
+									backgroundColor: lineColors[{{forloop.counter0}}],
+									pointBackgroundColor: lineColors[{{forloop.counter0}}],
+									fill: false
+								},
+							{% endfor %}
+
+						]
+					},
+					options: {
+						maintainAspectRatio: false,
+						legend: {display: false},
+						plugins: {
+							tooltip: {
+								callbacks: {
+									label: function(context) {
+										let label = context.dataset.label || '';
+
+										if (label) {
+											label += ': ';
+										}
+										if (context.parsed.y !== null) {
+											label += new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(context.parsed.y);
+										}
+										return label;
+									}
+								}
+							},
+							title: {
+								display: true,
+								text: 'Costo de envío diario por canal de venta'
+							}
+						}
+					}
+				});
+
+
+				const containerBody_shipping_cost = document.querySelector('.containerBody_shipping_cost'); 
+				const container_shipping_cost = document.querySelector('.container_shipping_cost');
+
+				if (chartId.data.labels.length > 30){ /*Si hay más de 7 labels*/
+
+					container_shipping_cost.style.overflowX = "scroll";
+
+					//Estas dos líneas son para incrementar la altura del gráfico cuando se agregue más data, esto mantiene el incremento de altura consistente, sin esto, se va a llegar a un punto en que el gráfico no se podrá leer.
+					const newWidth_shipping_cost = 950 + ((chartId.data.labels.length - 30) * 30);
+					containerBody_shipping_cost.style.width = `${newWidth_shipping_cost}px`;
+				}
+
+			</script>
+
+		</div>
+
+		
+	</div>
+
+
+
+
+
+	<div class="mystaff_hide mystaff_opt4">
+
+		<div style="width:1050px; border-bottom: 2px solid #595959; margin-bottom: 10px;">
+			<text style="text-align: left; color: #595959"><b>Cantidad</b></text>
+		</div>
+
+		<div style ="display: flex; flex-direction: row; gap: 50px;">
+
+
+			<div class="barTopProducts_container">
+
+				<select onchange="updateChart_quantity(this)" style="width: 115px; font-size: 14px; font-weight: bold; border:0;">
+						<option value="global">Global</option>
+					{% for marketplace in Marketplaces %}
+						<option value="{{ marketplace.Marketplace_name|cut:' ' }}">{{ marketplace.Marketplace_name }}</option>
+					{% endfor %}
+				</select>
+				<div class = "box_quantity"> <!-- Div que va a dar el scroll -->
+					<div class = "subbox_quantity"> <!-- Div que se encargara del tamaño del gráfico -->
+
+						<canvas id="barTopProducts_quantity"></canvas>
+
+					</div>
+				</div>
+			</div>
+	
+
+			<script>
+
+
+				const values_quantity = [
+
+
+
+					{% for product in products_quantity %}
+						{
+							productLabel: { global: '{{product.Description}} ({{product.SKU}})'}, productData: { global: {% if product.quantity_byProduct != None %} {{product.quantity_byProduct}} {% else %} 0 {% endif %}}
+						},
+					{% endfor %},
+
+
+					{% for product in productsByMarketplace_quantity %}
+						{
+							productLabel: { {{ product.sale__Sale_group__sale_marketplace|cut:' ' }}: '{{product.Description}} ({{product.SKU}})'}, productData: { {{product.sale__Sale_group__sale_marketplace|cut:' ' }}: {{product.quantity_byProduct}}}
+						},
+					{% endfor %}
+
+
+				]
+
+
+
+				const myChart_quantity = new Chart("barTopProducts_quantity", {
+					type: 'bar',
+					data: {
+						//labels: [{% for marketplace in Marketplaces %} '{{marketplace}}', {% endfor %}],
+						datasets: [{
+							label: "Cantidad",
+							data: values_quantity,
+							backgroundColor: ['lightblue'],
+							parsing: {
+								xAxisKey: 'productData.global',
+								yAxisKey: 'productLabel.global'
+							}
+
+
+						}]
+					},
+					options: {
+						maintainAspectRatio: false, /*Maintain the original canvas aspect ratio (width / height) when resizing. No nos interesa tenerlo activado ya que vamos a usar el tamaño definido por el subbox*/
+						indexAxis: 'y',
+						responsive: true,
+						plugins: {
+							legend: {
+								display: false
+							},
+							title: {
+								display: true,
+								text: 'Productos ordenados por cantidad vendida'
+							}
+
+						}
+					}
+				});
+
+
+
+				function updateChart_quantity(option){
+					console.log(option.value);
+
+					myChart_quantity.data.datasets[0].parsing.xAxisKey = `productData.${option.value}`;
+
+					myChart_quantity.data.labels = [];
+
+					myChart_quantity.data.datasets[0].parsing.yAxisKey = `productLabel.${option.value}`;
+					
+					myChart_quantity.update();
+				}
+
+
+				const subbox_quantity = document.querySelector('.subbox_quantity'); /*Se define el tamaño del gráfico*/
+				subbox_quantity.style.height ='300px';
+				subbox_quantity.style.width ='550px';
+
+				if (myChart_quantity.data.labels.length > 7){ /*Si hay más de 7 labels*/
+
+					//Estas dos líneas son para incrementar la altura del gráfico cuando se agregue más data, esto mantiene el incremento de altura consistente, sin esto, se va a llegar a un punto en que el gráfico no se podrá leer.
+					const newHeight_quantity = 300 + ((myChart_quantity.data.labels.length - 7) * 30);
+					subbox_quantity.style.height = `${newHeight_quantity}px`;
+				}
+
+
+			</script>
+
+
+			<canvas id="DonutChartQuantity" style="width:100%; max-width:350px; max-height: 300px;"></canvas>
+
+			<script type="text/javascript">
+
+
+				var barColors = ["#F86877", "#25BDA9", "#FFB029", "#4DA6FF","#F5EA51"];
+
+
+				new Chart("DonutChartQuantity", {
+					type: "doughnut",
+					data: {
+						labels: [{% for marketplace in Marketplaces %} '{{marketplace}}', {% endfor %}],
+						datasets: [{
+							backgroundColor: barColors,
+							data: [{% for marketplace in Marketplaces %} {% if marketplace.Total_sales_quantity_by_marketplace != None %} {{ marketplace.Total_sales_quantity_by_marketplace }} {% else %} 0 {% endif %}, {% endfor %}]
+						}]
+					},
+					options: {
+						plugins: {
+							legend: {
+								position: 'right',
+							},
+							title: {
+								display: true,
+								text: "Cantidad vendida total por canal de venta"
+							}
+						}
+					}
+				});
+
+			</script>
+
+
+		</div>
+
+
+
+		<div style="margin-top: 30px;">
+
+			<div class="lineChart_container">
+				<div class = "container_quantity"> <!-- Div que va a dar el scroll -->
+					<div class = "containerBody_quantity"> <!-- Div que se encargara del tamaño del gráfico -->
+						<canvas id="lineChart_quantity"></canvas>
+						<!--<canvas id="lineChart" style="width:100%; max-height: 400px;"></canvas>-->
+					</div>
+				</div>
+			</div>
+			
+			<script type="text/javascript">
+
+				var lineColors = ["#F86877", "#25BDA9", "#FFB029", "#4DA6FF","#F5EA51"];
+
+				chartId = new Chart("lineChart_quantity", {
+					type: "line",
+					data: {
+						labels: [{% for sale in Sales_TotalbyDay %} {% if sale.quantity_byDay != 0 %} '{{ sale.sale_date }}' ,{% endif %} {% endfor %}],
+						datasets: [
+
+							{% for marketplace in Marketplaces %}
+								{
+									label: '{{ marketplace.Marketplace_name }}',
+									data: [{% for sale in Marketplaces_sales_byDay %} {% if sale.Marketplace_name == marketplace.Marketplace_name %} {x: '{{ sale.sales_group__sale__sale_date }}', y: {{ sale.quantity_byDay }}} ,{% endif %} {% endfor %}],
+									borderColor: lineColors[{{forloop.counter0}}],
+									backgroundColor: lineColors[{{forloop.counter0}}],
+									pointBackgroundColor: lineColors[{{forloop.counter0}}],
+									fill: false
+								},
+							{% endfor %}
+
+						]
+					},
+					options: {
+						maintainAspectRatio: false,
+						legend: {display: false},
+						plugins: {
+							title: {
+								display: true,
+								text: 'Cantidad vendida diaria por canal de venta'
+							}
+						}
+					}
+				});
+
+
+				const containerBody_quantity = document.querySelector('.containerBody_quantity'); 
+				const container_quantity = document.querySelector('.container_quantity');
+
+				if (chartId.data.labels.length > 30){ /*Si hay más de 7 labels*/
+
+					container_quantity.style.overflowX = "scroll";
+
+					//Estas dos líneas son para incrementar la altura del gráfico cuando se agregue más data, esto mantiene el incremento de altura consistente, sin esto, se va a llegar a un punto en que el gráfico no se podrá leer.
+					const newWidth_quantity = 950 + ((chartId.data.labels.length - 30) * 30);
+					containerBody_quantity.style.width = `${newWidth_quantity}px`;
+				}
+
+			</script>
+
+		</div>
+
+
+	</div>
+
+
+</div>
+
+<script>
+	//add collapse to all tags hiden and showed by select mystuff
+	$('.mystaff_hide').addClass('collapse');
+
+	//on change hide all divs linked to select and show only linked to selected option
+	$('#mystuff').change(function(){
+		//Saves in a variable the wanted div
+		var selector = '.mystaff_' + $(this).val();
+
+		//hide all elements
+		$('.mystaff_hide').collapse('hide');
+
+		//show only element connected to selected option
+		$(selector).collapse('show');
+	});
+</script>
+
+
+
+
+{% endblock %}

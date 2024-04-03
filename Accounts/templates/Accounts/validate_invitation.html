@@ -1,0 +1,41 @@
+{% extends 'global.html' %}
+{% block title %}Validar invitación{% endblock %}
+
+{% block content %}
+
+<div class = "VerticalCenter_container"> <!--ESTE CONTAINER EXISTE CON EL ÚNICO PROPOSITO DE CENTRAR VERTICALMENTE LA SECCIÓN INDIVIDUAL-->
+	<div class="individualSection">
+		<div class = "individualSection_Title">
+			<h2><b>Validar invitación</b></h2>
+		</div>
+
+		<div class="individualSection_Body">
+			<h4>Está a punto de validar la siguiente invitación</h4>
+
+
+			<ul class = "object_Text" style="list-style: none;">
+				<li><b>Email: </b>{{ invitation.email }}</li>
+				<li><b>Invitación para usuario de tipo: </b>{{ invitation.user_Type }}</li>
+			</ul>
+
+			Id solicitud de invitación: {{ invitation.id }}
+
+			<ul class = "user_Text" style="list-style: none;">
+				<li><b>Solicitado por:</b> <p>{{ invitation.User_sender }} el {{ invitation.created_date }}</p></li>
+			</ul>
+
+			<div class="individualSection_Buttons">
+				<form method="POST">
+					{% csrf_token %}
+					<button class = "Confirm_Button" name = "validateInvitation">Validar</button>
+					<button class = "rejectButton" name = "rejectInvitation">Rechazar</button>
+				</form>
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+{% endblock %}

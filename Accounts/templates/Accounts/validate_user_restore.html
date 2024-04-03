@@ -1,0 +1,45 @@
+{% extends 'global.html' %}
+{% block title %}Validar restauración de usuario{% endblock %}
+
+{% block content %}
+
+<div class = "VerticalCenter_container"> <!--ESTE CONTAINER EXISTE CON EL ÚNICO PROPOSITO DE CENTRAR VERTICALMENTE LA SECCIÓN INDIVIDUAL-->
+	<div class="individualSection">
+		<div class = "individualSection_Title">
+			<h2><b>Validar restauración de usuario</b></h2>
+		</div>
+
+		<div class="individualSection_Body">
+			<h4>Está a punto de validar la restauración del siguiente usuario</h4>
+
+			<p><img class = "individualSection_image" src="{{ user.profile.profile_image.url }}"></p>
+
+
+			<ul class = "object_Text" style="list-style: none;">
+				<li><b>Usuario: </b>{{ user }}</li>
+				<li><b>Nombre: </b>{{ user.first_name }} {{ user.last_name }}</li>
+				<li><b>Tipo de usuario: </b>{{ user.profile.user_Type }}</li>
+				<li><b>Correo electrónico: </b>{{ user.profile.email }}</li>
+			</ul>
+
+			Id solicitud de restauración: {{ RestoreRequest.id }}
+
+			<ul class = "user_Text" style="list-style: none;">
+				<li><b>Solicitado por:</b> <p>{{ RestoreRequest.created_by }} el {{ RestoreRequest.created_date }}</p></li>
+			</ul>
+
+			<div class="individualSection_Buttons">
+				<form method="POST">
+					{% csrf_token %}
+					<button class = "Confirm_Button" name = "validateRestore">Validar</button>
+					<button class = "rejectButton" name = "rejectRestore">Rechazar</button>
+				</form>
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+{% endblock %}

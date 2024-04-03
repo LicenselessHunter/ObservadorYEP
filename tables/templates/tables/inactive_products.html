@@ -1,0 +1,61 @@
+{% extends 'global.html' %}
+{% block title %}Productos desactivados{% endblock %}
+
+{% block content %}
+
+<div id = "Table-section">
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-table"></i>
+		<h3><b>Lista de productos desactivados</b></h3>
+	</div>
+
+	<!--Aqui es donde estara la tabla-->
+	<div class="table-container">
+		<table class = "table" style = "box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);">
+			<thead style="border-bottom: 2px solid #E45454;">
+				<tr style="background-color: #E45454;"> <!-- Table row -->
+				<th scope="col">SKU</th> <!-- Table header -->
+					<th scope="col">Imagen</th>
+					<th scope="col">Descripción</th>
+					<th scope="col">Tipo de producto</th>
+					<th scope="col">Clasificación</th>
+					<th scope="col"></th><!-- Header de tabla vacío para los controles de editar y eliminar-->
+					
+				</tr>
+			</thead>
+
+			<tbody> <!-- Table body (Donde estarán las filas)-->
+					
+					{% for product in inactivated_products %}
+						<tr>
+								<!-- <td> table data -->
+								<td>{{ product.SKU }}</td>
+								<td><img class = "table_cell_image" src="{{ product.product_image.url }}"></td>
+								<td>{{ product.Description }}</td>
+								<td>{{ product.Product_type }}</td>
+								<td>{{ product.classification }}</td>
+
+								<td>
+									<div class="dropdown_individual_commands">
+										<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuProduct" data-bs-toggle="dropdown" aria-expanded="false">
+										</button>
+
+										<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuProduct">
+											<li><a href="{% url 'tables:Product_detail' product.id %}" class="dropdown-item">Detalle</a></li>
+											
+											{% if request.user.profile.user_Type == "Trabajador" %}
+												<li><a href="{% url 'tables:restore_product_request' product.id %}" class="dropdown-item">Solicitar Restauración</a></li>
+											{% endif %}
+										</ul>
+									</div>
+								</td>
+							
+						</tr>
+					{% endfor %}
+			</tbody>
+
+		</table>
+	</div>
+</div>
+
+{% endblock %}

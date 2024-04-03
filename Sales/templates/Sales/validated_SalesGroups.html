@@ -1,0 +1,49 @@
+{% extends 'global.html' %}
+{% block title %}Grupos de ventas validadas{% endblock %}
+
+{% block content %}
+
+<div id = "Table-section">
+
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-shop"></i>
+		<h3><b>Grupos de ventas validadas</b></h3>
+	</div>
+
+	<table id = "requests_table" class = "table">
+		<thead>
+			<tr>
+				<th class = "Referencial_header" scope="col">ID</th>
+				<th scope="col">Ingresados por</th>
+				<th scope="col">Fecha de ingreso</th>
+				<th scope="col">Canal de venta</th>
+				<th scope="col">Comparado por</th>
+				<th scope="col">Fecha de comparación</th>
+
+
+				<th scope="col"></th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for sales_group in validated_SalesGroups %}
+				<tr style="background-color: #E3FFE7;">
+					<td class = "Referencial_cell"><b>{{ sales_group.id }}</b></td>
+					<td>{{ sales_group.created_by }}</td>
+					<td>{{ sales_group.created_date }}</td>
+					<td>{{ sales_group.sale_marketplace }}</td>
+
+					<td>{{ sales_group.Compared_by }}</td>
+					<td>{{ sales_group.Compared_date }}</td>
+
+					<td><a href="{% url 'Sales:SalesGroup_detail' sales_group.id %}"><button style="background-color: #6c757d; border-radius: 0.60rem; color: #fff; border-color: #6c757d;">Examinar</button></a></td>
+
+				</tr>
+			{% endfor %}
+		</tbody>
+
+	</table>
+</div>
+
+
+{% endblock %}

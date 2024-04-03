@@ -1,0 +1,232 @@
+* {
+
+	
+}
+
+body {
+	background-color: #E3E3E3;
+	font-family: sans-serif; 
+
+}
+
+button {
+	border-style: solid;
+	
+}
+
+#supbar{
+	background-color: black;
+	height: 45px;
+	width: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1;
+}
+
+#sidebar-nav{
+	background-color: black;
+	position: fixed;
+	left: 0; /* Se pondrá el navbar pegado al límite izquierdo de la pantalla.*/
+	top: 0; /* Se pondrá el navbar pegado al límite superior, antes del supbar.*/
+	width: 150px;
+	padding-top: 20px;
+	height: 100%;
+	margin-top: 45px; /*Se empujara hacia abajo el sidebar para que no entorpezca al supbar*/
+	z-index: 1;
+}
+
+#sidebar-nav a{
+	display: block;
+	color: #818181;
+	padding-left: 3px;
+	font-size: 17px;
+	padding-top: 1px; 
+	padding-bottom: 1px;
+}
+
+#sidebar-nav a:hover {
+	color: #f1f1f1;
+	cursor: pointer;
+}
+
+#sidebar-nav .CloseArrow{
+	position: absolute;
+	font-size: 20px;
+	right: 10px;
+	top: 0;
+
+}
+
+#showcase{
+	margin-left: 150px; /*El showcase se va a empujar hacia la derecha para que no entorpezca al supbar*/
+	margin-top: 70px; /*El showcase hacia abajo para que no entorpezca al supbar*/
+}
+
+#messages{
+	margin-left: 150px;
+	margin-top: 45px;
+}
+
+.alert{ /*Mensajes de alerta (error, advertencia, etc)*/
+
+	padding: 6px 6px;
+	
+	/*
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	margin-left: 150px;
+	margin-top: 45px;
+	padding-right: 150px;
+	*/
+
+}
+
+.alert-dismissible .btn-close{ /*Botón para cerrar alerta*/
+	height: 0; /*Se dejara en 0, porque el tamaño por defecto es muy grande*/
+	padding: 1rem;
+
+}
+
+/*PRODUCT COMMANDS*/
+#Table-Comands-Product{
+	position: absolute;
+	left: 180px;
+	top: 0.6rem;
+
+}
+ 
+#Table-Comands-Product button{
+	width: 90px;
+	border-radius: 0.60rem;
+	color: #fff;
+	font-size: 0.9rem;
+}
+
+#dropdownMenuProduct-Create {
+	background-color: #0d6efd;
+}
+/*END PRODUCT COMMANDS*/
+
+
+
+#User-Controls{
+	position: absolute;
+	right: 5%;
+	top: 10px;
+}
+
+#User-Controls a{
+	margin: 5px;
+}
+
+
+/*MARKETPLACE COMANDS*/
+#AddButtonMarketplace {
+	position: absolute;
+	left: 180px;
+	top: 0.6rem;
+	width: 90px;
+	border-radius: 0.60rem;
+	color: #fff;
+	font-size: 0.9rem;
+	background-color: #0d6efd;
+}
+
+/* END MARKETPLACE COMANDS*/
+
+.Cancel_Button {
+	background-color: #6c757d;
+
+}
+
+.Confirm_Button {
+	background-color: #0d6efd;
+}
+
+.rejectButton {
+	color: #fff;
+	background-color: #6c757d;
+	border-color: #dc3545;
+}
+
+.validation_request_button {
+	background-color: #6c757d; 
+	border-radius: 0.60rem; 
+	color: #fff; 
+	border-color: #6c757d;
+}
+
+
+/*GROUPSALE COMMANDS*/
+#GROUPSALE_COMMANDS {
+	position: absolute;
+	left: 180px;
+	top: 0.6rem;
+}
+
+#GROUPSALE_COMMANDS button {
+	border-radius: 0.60rem;
+	color: #fff;
+	font-size: 0.9rem;
+	background-color: #0d6efd;
+
+}
+
+
+/* END GROUPSALE COMANDS*/
+
+#comparison_import_errorModal .modal-content, #import_errorModal .modal-content{
+	background-color: #f8d7da;
+	color: #842029;
+}
+
+
+#invite-button {
+	position: absolute;
+	left: 180px;
+	top: 0.6rem;
+	width: 90px;
+	border-radius: 0.60rem;
+	color: #fff;
+	font-size: 0.9rem;
+	background-color: #0d6efd;
+}
+
+#add_sales_button {
+	position: absolute;
+	left: 180px;
+	top: 0.6rem;
+	border-radius: 0.60rem;
+	color: #fff;
+	font-size: 0.9rem;
+	background-color: #0d6efd;
+	overflow: nowrap;
+}
+
+#Statistics-Time-Filters, #Finalized-sales-Filters {
+	position: absolute;
+	left: 180px;
+	top: 0.6rem;
+	color: #B4ADAD;
+
+}
+
+#Statistics-Time-Filters button, #Finalized-sales-Filters button {
+	border-radius: 0.60rem;
+	color: #fff;
+	font-size: 0.9rem;
+	background-color: #0d6efd;
+}
+
+#Statistics-Time-Filters input, #Finalized-sales-Filters input {
+	border-radius: 0.60rem;
+	color: black;
+	font-size: 0.9rem;
+	background-color: #E3E3E3;
+	border-color: #E3E3E3;
+
+}
+

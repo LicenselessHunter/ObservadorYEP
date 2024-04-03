@@ -1,0 +1,272 @@
+{% extends 'global.html' %}
+{% block title %}Grupo de venta n° {{ Sales_group_instance.id }}{% endblock %}
+
+{% block content %}
+
+<ul class = "user_Text" style="list-style: none;">
+	<li><b>Ventas ingresadas por:</b> <p>{{ Sales_group_instance.created_by }} el {{ Sales_group_instance.created_date }}</p></li>
+
+	{% if Sales_group_instance.Compared == True %}
+		<li><b>Ventas comparadas por:</b> <p>{{ Sales_group_instance.Compared_by }} el {{ Sales_group_instance.Compared_date }}</p></li>
+	{% endif %}
+
+	{% if Sales_group_instance.validation == True %}
+		<li><b>Validado por:</b> <p>{{ Sales_group_instance.validation_by }} el {{ Sales_group_instance.validation_date }}</p></li>
+	{% endif %}
+</ul>
+
+<div id = "Table-section">
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-table"></i>
+		<h3><b>Grupo de venta n° {{ Sales_group_instance.id }}</b></h3>
+	</div>
+
+
+	<!--Aqui es donde estara la tabla-->
+	<div class="table-container">
+		<table class = "table" style = "box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);">
+			<thead style="border-bottom: 2px solid #E45454;">
+				<tr style="background-color: #E45454;"> <!-- Table row -->
+					<th class = "Referencial_header" scope="col">ID</th>
+					<th scope="col">SKU</th>
+					<th scope="col">Cantidad</th>
+					<th scope="col">Venta bruta</th>
+					<th scope="col">N° Venta</th>
+					<th scope="col">Fecha de venta</th>
+					<th scope="col">Comisión</th>
+					<th scope="col">Costos de envío</th>
+					<th scope="col">Canal de venta</th>
+					<th scope="col"></th>
+					
+				</tr>
+			</thead>
+
+			<tbody> <!-- Table body (Donde estarán las filas)-->
+					
+					{% for sale in Sales_related_to_group %}
+						<tr>
+							<!-- <td> table data -->
+							<td class = "Referencial_cell"><b>{{ sale.id }}</b></td>
+							<td>{{ sale.SKU }}</td>
+							<td>{{ sale.quantity }}</td>
+							<td>{{ sale.gross_sales }}</td>
+							<td>{{ sale.sale_number }}</td>
+							<td>{{ sale.sale_date }}</td>
+							<td>{{ sale.commission }}</td>
+							<td>{{ sale.shipping_cost }}</td>
+							<td>{{ sale.Sale_group.sale_marketplace }}</td>
+							<td><a href="{% url 'Sales:sale_detail' sale.id %}"><button style="background-color: #6c757d; border-radius: 0.60rem; color: #fff; border-color: #6c757d;">Detalle</button></a></td>
+						</tr>
+					{% endfor %}
+			</tbody>
+
+		</table>
+
+
+	</div>
+	
+
+
+</div>
+
+<div style="display: flex; flex-direction: column; align-items: center; margin-top: 30px;">
+	{% if Sales_group_instance.additional_note != '' %}
+		<b>Nota adicional del trabajador:</b>
+		<p class = "additional_note_textbox"> {{ Sales_group_instance.additional_note }}</p>
+	{% endif %}
+
+		<b>Total venta bruta:</b>
+		<p>{{ Totals.Total_gross_sales }}</p>
+
+		<b>Total comisión:</b>
+		<p>{{ Totals.Total_commission }}</p>
+
+		<b>Total costo de envío:</b>
+		<p>{{ Totals.Total_shipping_cost }}</p>
+
+		<b>Total cantidad vendida:</b>
+		<p>{{ Totals.Total_sales_quantity }}</p>
+
+
+		<b>Total de registros de ventas:</b>
+		<p>{{ Total_sales_objects }}</p>
+
+
+</div>
+
+<!-- Comparison import Modal -->
+<div
+	class="modal fade"
+	id="import-compareSales-modal"
+	tabindex="-1"
+	aria-labelledby="enrollLabel"
+	aria-hidden="true"
+>  
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="enrollLabel">Importar archivo de comparación</h5>
+				<button
+					type="button"
+					class="btn-close"
+					data-bs-dismiss="modal"
+					aria-label="Close"
+				></button>
+			</div>
+		<div class="modal-body">
+				
+					
+				<form method="POST" enctype="multipart/form-data">
+						{% csrf_token %}
+
+						<p>
+							Para la importación, se deben especificar los sgtes. campos <b>tal cual</b>:
+							<ul>
+								<li>cantidad (Debe ser número positivo entero mayor a 0)</li>
+								<li>venta_bruta (Debe ser 0 o un número positivo entero)</li>
+								<li>numero_venta (Campo de texto, no más de 40 carácteres)</li>
+								<li>fecha_venta (Debe ser formato Fecha)</li>
+								<li>comision (Debe ser 0 o un número positivo entero)</li>
+								<li>costo_despacho (Debe ser 0 o un número positivo entero)</li>
+								<li>SKU (Debe existir en el sistema)</li>
+							</ul>
+						</p>
+
+						<p style ="font-size: 0.9rem;"><b>*Los campos deben estar en la fila 1 de su archivo</b></p>
+						<p style ="font-size: 0.9rem;"><b>*No importa en que orden estén los campos</b></p>
+						<p style ="font-size: 0.9rem;"><b>*No importa en que orden estén las filas</b></p>
+						<p style ="font-size: 0.9rem;"><b>*Debe ser un archivo en formato .xlsx</b></p>
+
+						<p>
+							<input type="file" name="ImportData">
+						</p>
+
+						<button
+						type="button"
+						class="btn btn-secondary"
+						data-bs-dismiss="modal"
+						> Cerrar
+						</button>
+
+						<button type="submit" name="import_comparison" class="btn btn-primary">Importar</button>
+				</form>
+					
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<!-- Comparison admin import Modal -->
+<div
+	class="modal fade"
+	id="import-compareSalesAdmin-modal"
+	tabindex="-1"
+	aria-labelledby="enrollLabel"
+	aria-hidden="true"
+>  
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="enrollLabel">Importar archivo de comparación</h5>
+				<button
+					type="button"
+					class="btn-close"
+					data-bs-dismiss="modal"
+					aria-label="Close"
+				></button>
+			</div>
+		<div class="modal-body">
+				
+					
+				<form method="POST" enctype="multipart/form-data">
+						{% csrf_token %}
+
+						<p>
+							Aquí puede subir un archivo para realizar un control cruzado con las ventas del grupo, esta comparación es opcional, aún tendrá que decidir si validar o rechazar el grupo.
+							<br>
+							Para la importación, se deben especificar los sgtes. campos <b>tal cual</b>:
+							<ul>
+								<li>cantidad (Debe ser número positivo entero mayor a 0)</li>
+								<li>venta_bruta (Debe ser 0 o un número positivo entero)</li>
+								<li>numero_venta (Campo de texto, no más de 40 carácteres)</li>
+								<li>fecha_venta (Debe ser formato Fecha)</li>
+								<li>comision (Debe ser 0 o un número positivo entero)</li>
+								<li>costo_despacho (Debe ser 0 o un número positivo entero)</li>
+								<li>SKU (Debe existir en el sistema)</li>
+							</ul>
+						</p>
+
+						<p style ="font-size: 0.9rem;"><b>*Los campos deben estar en la fila 1 de su archivo</b></p>
+						<p style ="font-size: 0.9rem;"><b>*No importa en que orden estén los campos</b></p>
+						<p style ="font-size: 0.9rem;"><b>*No importa en que orden estén las filas</b></p>
+						<p style ="font-size: 0.9rem;"><b>*Debe ser un archivo en formato .xlsx</b></p>
+
+						<p>
+							<input type="file" name="ImportData">
+						</p>
+
+						<button
+						type="button"
+						class="btn btn-secondary"
+						data-bs-dismiss="modal"
+						> Cerrar
+						</button>
+
+						<button type="submit" name="import_admin_comparison" class="btn btn-primary">Importar</button>
+				</form>
+					
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<!---- decide salesGroup modal ---->
+<div
+	class="modal fade"
+	id="decide_salesGroup-modal"
+	tabindex="-1"
+	aria-labelledby="enrollLabel"
+	aria-hidden="true"
+>  
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="enrollLabel">Validar o rechazar grupo de venta</h5>
+				<button
+					type="button"
+					class="btn-close"
+					data-bs-dismiss="modal"
+					aria-label="Close"
+				></button>
+			</div>
+		<div class="modal-body">
+				
+					
+				<form method="POST" enctype="multipart/form-data">
+						{% csrf_token %}
+						<ul>
+							<li><p>Al validar el siguiente grupo de venta, estas se moveran a las ventas finalizadas</p></li>
+							<li><p>En caso de rechazar, el grupo de venta será eliminado</p></li>
+						</ul>
+
+						<button type="submit" name="validate" class="btn btn-primary">Validar</button>
+						<button type="submit" name="reject" class="btn btn-secondary">Rechazar</button>
+				</form>
+					
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}

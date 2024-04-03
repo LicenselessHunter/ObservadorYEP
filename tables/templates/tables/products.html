@@ -1,0 +1,155 @@
+{% extends 'global.html' %}
+{% block title %}Lista de Productos{% endblock %}
+
+{% block content %}
+<div id = "Table-section">
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-table"></i>
+		<h3><b>Lista de productos</b></h3>
+	</div>
+
+	<!--Aqui es donde estara la tabla-->
+	<div class="table-container">
+		<table class = "table" style = "box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);">
+			<thead style="border-bottom: 2px solid #009879;">
+				<tr style="background-color: #009879;"> <!-- Table row -->
+					<th scope="col">SKU</th> <!-- Table header -->
+					<th scope="col">Imagen</th>
+					<th scope="col">Descripción</th>
+					<th scope="col">Tipo de producto</th>
+					<th scope="col">Clasificación</th>
+					<th scope="col"></th><!-- Header de tabla vacío para los controles de editar y eliminar-->
+					
+				</tr>
+			</thead>
+
+			<tbody> <!-- Table body (Donde estarán las filas)-->
+					
+					{% for product in validated_products %}
+						<tr>
+								<!-- <td> table data -->
+								<td>{{ product.SKU }}</td>
+								<td><img class = "table_cell_image" src="{{ product.product_image.url }}"></td>
+								<td>{{ product.Description }}</td>
+								<td>{{ product.Product_type }}</td>
+								<td>{{ product.classification }}</td>
+								<td>
+									<div class="dropdown_individual_commands">
+										<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuProduct" data-bs-toggle="dropdown" aria-expanded="false">
+										</button>
+
+										<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuProduct">
+											<li><a href="{% url 'tables:Product_detail' product.id %}" class="dropdown-item">Detalle</a></li>
+											
+											{% if request.user.profile.user_Type == "Trabajador" %}
+												<li><a href="{% url 'tables:modify_product_request' product.id %}" class="dropdown-item">Solicitar Modificación</a></li>
+											{% endif %}
+
+											{% if request.user.profile.user_Type == "Trabajador" %}
+												<li><a href="{% url 'tables:deactivate_product_request' product.id %}" class="dropdown-item">Solicitar Desactivación</a></li>
+											{% endif %}
+										</ul>
+									</div>
+								</td>
+							
+						</tr>
+					{% endfor %}
+			</tbody>
+
+		</table>
+	</div>
+
+</div>
+
+<!-- Create Modal -->
+<div
+	class="modal fade"
+	id="create-modal-product"
+	tabindex="-1"
+	aria-labelledby="enrollLabel"
+	aria-hidden="true"
+>  
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="enrollLabel">Creación de producto</h5>
+				<button
+					type="button"
+					class="btn-close"
+					data-bs-dismiss="modal"
+					aria-label="Close"
+				></button>
+			</div>
+		<div class="modal-body">
+				
+					
+				<form id="ProductCreate-form" method="POST" autocomplete="off" enctype="multipart/form-data">
+						{% csrf_token %}
+						<p style="text-align:right;">(*) Campo obligatorio</p>
+						{{form.as_p}} <!--Aquí se va a poner el key name "form" que va a mostrar los campos que va a tener el form.-->
+
+						<button
+						type="button"
+						class="btn btn-secondary"
+						data-bs-dismiss="modal"
+						> Cerrar
+						</button>
+
+						<button type="submit" name="createProduct" class="btn btn-primary">Crear</button>
+				</form>
+					
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<!-- Define PACK childs Modal -->
+<div
+	class="modal fade"
+	id="define-child-modal"
+	tabindex="-1"
+	aria-labelledby="enrollLabel"
+	aria-hidden="true"
+>  
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="enrollLabel">Definir cantidad de productos 'hijos'</h5>
+				<button
+					type="button"
+					class="btn-close"
+					data-bs-dismiss="modal"
+					aria-label="Close"
+				></button>
+			</div>
+		<div class="modal-body">
+				
+					
+				<form id="DefineChildQuantity-form" method="POST">
+						{% csrf_token %}
+						
+						<input type="number" name="childQuantity" min="1" max="99">
+
+						<button
+						type="button"
+						class="btn btn-secondary"
+						data-bs-dismiss="modal"
+						> Cerrar
+						</button>
+
+						<button type="submit" name="defineChildQuantity" class="btn btn-primary">ir a la creación de PACK</button>
+				</form>
+					
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}

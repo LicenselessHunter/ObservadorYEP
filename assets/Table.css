@@ -1,0 +1,102 @@
+
+#Table-section {
+	margin: 0 70px;
+	white-space: nowrap;
+	display: inline-block;
+	min-width: 75rem; 
+}
+
+.title-container {
+	display: flex;
+	align-items: center;
+	background-color: #474747;
+	color: #ffffff;
+}
+
+.title-container h3 {
+	padding: 0 40px;
+	vertical-align: middle;
+	margin-bottom: 0;
+}
+
+
+#Table_Icon_title {
+	padding-left: 20px;
+	font-size: 20pt;
+}
+
+.table-container {
+	background-color: #ffffff;
+	/*margin: 0 125px;*/
+	padding: 30px 40px;
+	margin-top: 7px;
+	width: 100%;
+}
+
+.table {
+	font-size: 0.85em;
+	background-color: #ffffff;
+	vertical-align: middle;
+}
+
+/*
+.table th {
+
+}
+*/
+
+.table thead tr {
+	/*background-color: #009879;*/
+	color: #ffffff;
+	text-align: left;
+	font-weight: bold;
+}
+
+
+
+.modal-body{
+	padding-left: 40px;
+	padding-right: 40px;
+}
+
+.modal-body input{
+	width: 100%;
+}
+
+.table_cell_image {
+	width: 50px;
+	height: 50px;
+}
+
+.Referencial_header {
+	padding: 12px 10px;
+	text-align: center;
+}
+
+.Referencial_cell {
+	padding: 12px 10px;
+	text-align: center;
+	font-size: 0.75rem;
+}
+
+.pagination {
+	margin-top: 1rem; 
+}
+
+.dropdown_individual_commands button{
+	padding: 0px 4px;
+}
+
+.dropdown-toggle::after {
+	margin-left: 0em;
+}
+
+.user-thumbnail {
+	width: 70px;
+	height: 70px;
+}
+
+#InvitationRequest-form input{
+	width: 90%;
+}
+

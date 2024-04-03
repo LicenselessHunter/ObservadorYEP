@@ -1,0 +1,54 @@
+{% extends 'global.html' %}
+{% block title %}Productos sin validar{% endblock %}
+
+{% block content %}
+
+<div id = "Table-section">
+
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-shop"></i>
+		<h3><b>Solicitudes de creación de productos</b></h3>
+	</div>
+
+	<table id = "requests_table" class = "table">
+		<thead>
+			<tr>
+				<th scope="col">SKU</th>
+				<th scope="col">Descripción</th>
+				<th scope="col">Solicitado por</th>
+				<th scope="col">Fecha de solicitud</th>
+				<th scope="col"></th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for product in unvalidated_products %}
+				<tr>
+					<td>{{ product.SKU }}</td>
+					<td>{{ product.Description }}</td>
+					<td>{{ product.created_by }}</td>
+					<td>{{ product.created_date }}</td>
+
+					<td>
+						<div class="dropdown_individual_commands">
+							<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu_InvalidProduct" data-bs-toggle="dropdown" aria-expanded="false">
+							</button>
+
+							<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenu_InvalidProduct">
+								<li><a href="{% url 'tables:Product_detail' product.id %}" class="dropdown-item">Detalle</a></li>
+								
+								{% if request.user.profile.user_Type == "Administrador" %}
+									<li><a href="{% url 'tables:validate_product' product.id %}" class="dropdown-item">Decidir</a></li>
+								{% endif %}
+
+							</ul>
+						</div>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+
+	</table>
+</div>
+
+{% endblock %}

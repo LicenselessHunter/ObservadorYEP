@@ -1,0 +1,148 @@
+/*ESTE CONTAINER EXISTE CON EL ÚNICO PROPOSITO DE CENTRAR VERTICALMENTE LA SECCIÓN INDIVIDUAL*/
+.VerticalCenter_container{
+	display: flex;
+	justify-content: center;
+}
+
+
+.individualSection {
+	/*margin: 0 200px;*/
+	min-width: 700px;
+	box-shadow: 0 0 80px rgba(0, 0, 0, 0.15);
+	display: inline-block;
+
+	/*overflow: hidden;
+	white-space: nowrap;*/
+}
+
+
+.individualSection_Title {
+	padding: 0.30rem 2rem;
+	text-align: center;
+	background-color: #474747;
+	color: #ffffff;
+}
+
+.individualSection_Title h2{
+	margin-bottom: 0;
+}
+
+.individualSection_Body {
+	background-color: #ffffff;
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 35px;
+}
+
+
+.object_Text {
+	font-size: 1em;
+	margin: 0;
+	padding: 0;
+}
+
+.user_Text {
+	font-size: 0.85em;
+	text-align: center;
+	line-height: 1.8rem;
+	padding: 0;
+}
+
+.individualSection_image {
+	width: 140px;
+}
+
+.warning {
+	color: red;
+}
+
+.individualSection_Buttons {
+	display: flex;
+	gap: 30px;
+	justify-content: center;
+}
+
+.individualSection_Buttons button {
+	width: 100px;
+	color: #ffffff;
+	border-radius: 0.4rem;
+	border: 3px solid transparent;
+}
+
+
+.Edit_MyProfile_Button {
+	background-color: #0d6efd;
+
+	width: 130px;
+	color: #ffffff;
+	border-radius: 0.4rem;
+	border: 3px solid transparent;
+}
+
+.PACK_content_title {
+	color:#197ED2;	
+}
+
+.PACK_content {
+	font-size: 1rem;
+	padding: 0;
+	text-align: center;
+}
+
+.related_Sales {
+	font-size: 1rem;
+	padding: 0;
+	text-align: center;
+}
+
+.Edit_form {
+	font-size: 1rem;
+}
+
+.Edit_form input{
+	width: 100%;
+}
+
+.Edit_form label{
+	text-align: left;
+}
+
+
+.Invitation_Form {
+	font-size: 1.15rem;
+}
+
+.Invitation_Form input{
+	width: 100%;
+}
+
+.Invite_Button {
+	background-color: #0d6efd;
+
+	width: 200px;
+	color: #ffffff;
+	border-radius: 0.4rem;
+	border: 3px solid transparent;
+}
+
+
+.Pack_form {
+	display: flex;
+	flex-direction: column;
+	row-gap: 45px;
+	font-size: 1rem;
+}
+
+.Pack_form input{
+	font-size: 1rem;
+	width: 100%;
+}
+
+
+.referencial_description_textbox, .additional_note_textbox{
+	text-align: left; 
+	max-width: 400px; 
+	word-wrap: break-word;
+}

@@ -1,0 +1,65 @@
+{% extends 'global.html' %}
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+<div class = "Home-section">
+	<h2 style="color:#197ED2;"><b>Bienvenido {{ user.username }}</b></h2>
+
+	<div class = "GeneralInformationHome_container">
+
+		<div class = "Information_blockHome">
+			<p><b>{{ Total_products }}</b></p>
+			<p><i class="fa-solid fa-box"></i> Productos en catalogo</p>
+		</div>
+
+
+		<div class = "Information_blockHome">
+			<p><b>{{ Total_users }}</b></p>
+			<p><i class="fa-solid fa-user"></i> Usuarios operativos</p>
+		</div>
+
+		<div class = "Information_blockHome">
+			<p><b>{{ Total_marketplaces }}</b></p>
+			<p><i class="fa-solid fa-shop"></i> Canales de venta</p>
+		</div>
+
+	</div>
+
+
+	<div class = "graphDivHome" style="width:100%; max-width:680px; padding: 50px; background-color: #ffffff; border-radius: 1rem;">
+		<canvas id="DonutChartQuantity"></canvas>
+
+		<script type="text/javascript">
+
+
+			var barColors = ["#F86877", "#25BDA9", "#FFB029", "#4DA6FF","#F5EA51"];
+
+
+			new Chart("DonutChartQuantity", {
+				type: "doughnut",
+				data: {
+					labels: [{% for marketplace in Marketplaces %} '{{marketplace}}', {% endfor %}],
+					datasets: [{
+						backgroundColor: barColors,
+						data: [{% for marketplace in Marketplaces %} {% if marketplace.Total_sales_quantity_by_marketplace != None %} {{ marketplace.Total_sales_quantity_by_marketplace }} {% else %} 0 {% endif %}, {% endfor %}]
+					}]
+				},
+				options: {
+					plugins: {
+						legend: {
+							position: 'right',
+						},
+						title: {
+							display: true,
+							text: "Cantidad vendida total por canal de venta"
+						}
+					}
+				}
+			});
+
+		</script>
+	</div>
+
+
+</div>
+{% endblock %}

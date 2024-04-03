@@ -1,0 +1,96 @@
+{% extends 'global.html' %}
+{% block title %}Ventas finalizadas{% endblock %}
+
+{% block content %}
+
+<div id = "Table-section">
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-table"></i>
+		<h3><b>Ventas finalizadas</b></h3>
+	</div>
+
+
+	<!--Aqui es donde estara la tabla-->
+	<div class="table-container">
+		<table class = "table" style = "box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);">
+			<thead style="border-bottom: 2px solid #009879;">
+				<tr style="background-color: #009879;"> <!-- Table row -->
+					<th class = "Referencial_header" scope="col">ID</th>
+					<th scope="col">SKU</th>
+					<th scope="col">Cantidad</th>
+					<th scope="col">Venta bruta</th>
+					<th scope="col">N° Venta</th>
+					<th scope="col">Fecha de venta</th>
+					<th scope="col">Comisión</th>
+					<th scope="col">Costos de envío</th>
+					<th scope="col">Canal de venta</th>
+					<th scope="col"></th>
+					
+				</tr>
+			</thead>
+
+			<tbody> <!-- Table body (Donde estarán las filas)-->
+					
+
+					{% if MarketplaceChoosed or DateFilterUsed == True %}
+						{% for sale in finalized_sales %}
+							<tr>
+								<!-- <td> table data -->
+								<td class = "Referencial_cell"><b>{{ sale.id }}</b></td>
+								<td>{{ sale.SKU }}</td>
+								<td>{{ sale.quantity }}</td>
+								<td>{{ sale.gross_sales }}</td>
+								<td>{{ sale.sale_number }}</td>
+								<td>{{ sale.sale_date }}</td>
+								<td>{{ sale.commission }}</td>
+								<td>{{ sale.shipping_cost }}</td>
+								<td>{{ sale.Sale_group.sale_marketplace }}</td>
+								<td><a href="{% url 'Sales:sale_detail' sale.id %}"><button style="background-color: #6c757d; border-radius: 0.60rem; color: #fff; border-color: #6c757d;">Detalle</button></a></td>
+
+							</tr>
+						{% endfor %}
+
+					{% else %}
+						{% for sale in Paginate_finalized_sales %}
+							<tr>
+								<!-- <td> table data -->
+								<td class = "Referencial_cell"><b>{{ sale.id }}</b></td>
+								<td>{{ sale.SKU }}</td>
+								<td>{{ sale.quantity }}</td>
+								<td>{{ sale.gross_sales }}</td>
+								<td>{{ sale.sale_number }}</td>
+								<td>{{ sale.sale_date }}</td>
+								<td>{{ sale.commission }}</td>
+								<td>{{ sale.shipping_cost }}</td>
+								<td>{{ sale.Sale_group.sale_marketplace }}</td>
+								<td><a href="{% url 'Sales:sale_detail' sale.id %}"><button style="background-color: #6c757d; border-radius: 0.60rem; color: #fff; border-color: #6c757d;">Detalle</button></a></td>
+
+							</tr>
+						{% endfor %}
+
+					{% endif %}
+			</tbody>
+
+		</table>
+
+		{% if MarketplaceChoosed == False and DateFilterUsed == False %}
+
+			<ul class="pagination">
+				{% if Paginate_finalized_sales.has_previous %}
+					<li class="page-item"><a class="page-link" href="?page=1">&laquo;</a></li>
+					<li class="page-item"><a class="page-link" href="?page={{ Paginate_finalized_sales.previous_page_number }}">&#8249;</a></li>
+				{% endif %}
+
+			<li class="page-item active"><text class="page-link">Página {{ Paginate_finalized_sales.number }} de {{ Paginate_finalized_sales.paginator.num_pages }}</text></li>
+
+				{% if Paginate_finalized_sales.has_next %}
+					<li class="page-item"><a class="page-link" href="?page={{ Paginate_finalized_sales.next_page_number }}">&#8250;</a></li>
+					<li class="page-item"><a class="page-link" href="?page={{ Paginate_finalized_sales.paginator.num_pages }}">&raquo;</a></li>
+				{% endif %}
+			</ul>
+		{% endif %}
+	</div>
+
+</div>
+
+{% endblock %}

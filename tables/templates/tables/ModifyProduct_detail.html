@@ -1,0 +1,69 @@
+{% extends 'global.html' %}
+{% block title %}Solicitud de modificación validada{% endblock %}
+
+{% block content %}
+
+<div class = "VerticalCenter_container"> <!--ESTE CONTAINER EXISTE CON EL ÚNICO PROPOSITO DE CENTRAR VERTICALMENTE LA SECCIÓN INDIVIDUAL-->
+	<div class="individualSection">
+		<div class = "individualSection_Title">
+			<h2><b>Detalle de solicitud de modificación de producto</b></h2>
+		</div>
+
+		<div class="individualSection_Body">
+
+			<h3><b>Producto sin modificación</b></h3>
+
+			
+			{% if ModifyRequest.validation == True %}
+
+				<p><img class = "individualSection_image" src="{{ ModifyRequest.past_product_image.url }}"></p>
+
+				<ul class = "object_Text" style="list-style: none;">
+					<li><b>SKU:</b> {{ ModifyRequest.id_product.SKU }}</li>
+					<li><b>Descripción:</b> {{ ModifyRequest.past_Description }}</li>
+					<li><b>Clasificación:</b> {{ ModifyRequest.past_classification }}</li>
+					<li><b>Tipo de producto:</b> {{ ModifyRequest.id_product.Product_type }}</li>
+				</ul>
+
+			{% elif ModifyRequest.validation == False %}
+
+				<p><img class = "individualSection_image" src="{{ product.product_image.url }}"></p>
+
+				<ul class = "object_Text" style="list-style: none;">
+					<li><b>SKU:</b> {{ product.SKU }}</li>
+					<li><b>Descripción:</b> {{ product.Description }}</li>
+					<li><b>Clasificación:</b> {{ product.classification }}</li>
+					<li><b>Tipo de producto:</b> {{ product.Product_type }}</li>
+				</ul>
+
+			{% endif %}
+
+
+			<h3><b>Producto con modificación</b></h3>
+
+			<p><img class = "individualSection_image" src="{{ ModifyRequest.modified_product_image.url }}"></p>
+
+			<ul class = "object_Text" style="list-style: none;">
+				<li><b>SKU:</b> {{ ModifyRequest.id_product.SKU }}</li>
+				<li><b>Descripción:</b> {{ ModifyRequest.modified_Description }}</li>
+				<li><b>Clasificación:</b> {{ ModifyRequest.modified_classification }}</li>
+				<li><b>Tipo de producto:</b> {{ product.Product_type }}</li>
+			</ul>
+
+			Id solicitud de modificación: {{ ModifyRequest.id }}
+
+			<ul class = "user_Text" style="list-style: none;">
+				<li><b>Solicitado por:</b> <p>{{ ModifyRequest.created_by }} el {{ ModifyRequest.created_date }}</p></li>
+				
+				{% if ModifyRequest.validation == True %}
+					<li><b>Validado por:</b> <p>{{ ModifyRequest.validation_by }} el {{ ModifyRequest.validation_date }}</p></li>
+				{% endif %}
+			</ul>
+
+		</div>
+
+	</div>
+
+</div>
+
+{% endblock %}

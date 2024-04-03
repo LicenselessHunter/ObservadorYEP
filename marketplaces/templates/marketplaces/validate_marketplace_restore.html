@@ -1,0 +1,44 @@
+{% extends 'global.html' %}
+{% block title %}Validar restauración de canal de venta{% endblock %}
+
+{% block content %}
+
+<div class = "VerticalCenter_container"> <!--ESTE CONTAINER EXISTE CON EL ÚNICO PROPOSITO DE CENTRAR VERTICALMENTE LA SECCIÓN INDIVIDUAL-->
+	<div class="individualSection">
+		<div class = "individualSection_Title">
+			<h2><b>Validar restauración de canal de venta</b></h2>
+		</div>
+
+		<div class="individualSection_Body">
+			<h4>Está a punto de validar la restauración del siguiente canal de venta</h4>
+
+			<p><img class = "individualSection_image" src="{{ marketplace.marketplace_image.url }}"></p>
+
+
+			<ul class = "object_Text" style="list-style: none;">
+				<li><b>Nombre canal:</b> {{ marketplace.Marketplace_name }}</li>
+				<br>
+				<li><b>Descripción referencial:</b><p class = "referencial_description_textbox"> {{ marketplace.referencial_description }} </p></li>
+			</ul>
+
+			Id solicitud de restauración: {{ RestoreRequest.id }}
+
+			<ul class = "user_Text" style="list-style: none;">
+				<li><b>Solicitado por:</b> <p>{{ RestoreRequest.created_by }} el {{ RestoreRequest.created_date }}</p></li>			
+			</ul>
+
+			<div class="individualSection_Buttons">
+				<form method="POST">
+					{% csrf_token %}
+					<button class = "Confirm_Button" name = "validateRestore">Validar</button>
+					<button class = "rejectButton" name = "rejectRestore">Rechazar</button>
+				</form>
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+{% endblock %}

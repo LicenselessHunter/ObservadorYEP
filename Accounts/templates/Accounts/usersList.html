@@ -1,0 +1,95 @@
+{% extends 'global.html' %}
+{% block title %}Usuarios activos{% endblock %}
+
+{% block content %}
+
+<div id = "Table-section">
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-user"></i>
+		<h3><b>Usuarios activos</b></h3>
+	</div>
+
+	<div class="table-container">
+		<table class = "table" style = "box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);">
+			<thead style="border-bottom: 2px solid #009879;">
+				<tr style="background-color: #009879;">
+					<th scope="col">Usuario</th>
+					<th scope="col">Nombre</th>
+					<th scope="col">Tipo de usuario</th>
+					<th scope="col">Email</th>
+					<th></th>
+				</tr>
+			</thead>
+
+			<tbody>
+				{% for profile in activeProfiles %}
+				<tr>
+					<td><img class="user-thumbnail" src="{{ profile.profile_image.url }}"> {{ profile.user }}</td>
+					<td>{{ profile.user.first_name }} {{ profile.user.last_name }}</td>
+					<td>{{ profile.user_Type }}</td>
+					<td>{{ profile.user.email }}</td>
+					<td>
+						<div class="dropdown_individual_commands">
+							<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuProfiles" data-bs-toggle="dropdown" aria-expanded="false">
+							</button>
+
+							<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuProfiles">
+								<li><a href="{% url 'Accounts:userProfile' profile.id %}" class="dropdown-item">Ver perfil</a></li>
+
+								{% if request.user.profile.user_Type == "Trabajador" and request.user != profile.user %}
+									<li><a href="{% url 'Accounts:deactivate_user_request' profile.user.id %}" class="dropdown-item">Solicitar Desactivación</a></li>
+								{% endif %}
+							</ul>
+						</div>
+					</td>					
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+<div>
+
+<!-- Invite Modal -->
+<div
+	class="modal fade"
+	id="invite-modal"
+	tabindex="-1"
+	aria-labelledby="enrollLabel"
+	aria-hidden="true"
+>  
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="enrollLabel">Solicitar invitación</h5>
+				<button
+					type="button"
+					class="btn-close"
+					data-bs-dismiss="modal"
+					aria-label="Close"
+				></button>
+			</div>
+		<div class="modal-body">
+				
+					
+				<form id="InvitationRequest-form" autocomplete="off" method="POST" enctype="multipart/form-data">
+						{% csrf_token %}
+						{{form.as_p}} <!--Aquí se va a poner el key name "form" que va a mostrar los campos que va a tener el form.-->
+
+						<button
+						type="button"
+						class="btn btn-secondary"
+						data-bs-dismiss="modal"
+						> Cerrar
+						</button>
+
+						<button type="submit" class="btn btn-primary">Solicitar invitación</button>
+				</form>
+					
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

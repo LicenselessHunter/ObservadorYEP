@@ -1,0 +1,55 @@
+{% extends 'global.html' %}
+{% block title %}Canales de venta desactivados{% endblock %}
+
+{% block content %}
+
+<div id = "Table-section">
+
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-shop"></i>
+		<h3><b>Canales de venta desactivados</b></h3>
+	</div>
+
+	<div class="table-container">
+		<table class = "table" style = "box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);">
+			<thead style="border-bottom: 2px solid #E45454;">
+				<tr style="background-color: #E45454;">
+					<th scope="col">Logo</th>
+					<th scope="col">Nombre canal</th>
+					<th scope="col">Ingresado por</th>
+					<th scope="col">Fecha de ingreso</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+
+			<tbody>
+				{% for marketplace in inactivated_marketplaces %}
+				<tr>
+					<td><img class="marketplace-thumbnail" src="{{ marketplace.marketplace_image.url }}"></td>
+					<td>{{ marketplace.Marketplace_name }}</td>
+					<td>{{ marketplace.validation_by }}</td>
+					<td>{{ marketplace.validation_date }}</td>
+					<td>
+						<div class="dropdown_individual_commands">
+							<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuProduct" data-bs-toggle="dropdown" aria-expanded="false">
+							</button>
+
+							<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuProduct">
+								<li><a href="{% url 'marketplaces:Marketplace_detail' marketplace.id %}" class="dropdown-item">Detalle</a></li>
+								
+
+								{% if request.user.profile.user_Type == "Trabajador" %}
+									<li><a href="{% url 'marketplaces:restore_marketplace_request' marketplace.id %}" class="dropdown-item">Solicitar Restauración</a></li>
+								{% endif %}
+							</ul>
+						</div>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+
+		</table>
+	</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'global.html' %}
+{% block title %}Invitaciones pendientes{% endblock %}
+
+{% block content %}
+
+<div id = "Table-section">
+
+	<div class = "title-container">
+		<i id = "Table_Icon_title" class="fa-solid fa-shop"></i>
+		<h3><b>Invitaciones pendientes</b></h3>
+	</div>
+
+	<table id = "requests_table" class = "table">
+		<thead>
+			<tr>
+				<th class = "Referencial_header" scope="col">ID</th>
+				<th scope="col">Email</th>
+				<th scope="col">Invitación para usuario de tipo</th>
+				<th scope="col">Fecha de creación</th>
+				<th scope="col">Usuario emisor</th>
+				<th scope="col"></th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for invitation in unvalidated_invitation_requests %}
+				<tr>
+					<td class = "Referencial_cell"><b>{{ invitation.id }}</b></td>
+					<td>{{ invitation.email }}</td>
+					<td>{{ invitation.user_Type }}</td>
+					<td>{{ invitation.created_date }}</td>
+					<td>{{ invitation.User_sender }}</td>
+					
+					{% if request.user.profile.user_Type == "Administrador" %}
+						<td><a href="{% url 'Accounts:validate_invitation' invitation.id %}"><button style="background-color: #6c757d; border-radius: 0.60rem; color: #fff; border-color: #6c757d;">Decidir</button></a></td>
+					{% endif %}
+
+				</tr>
+			{% endfor %}
+		</tbody>
+
+	</table>
+</div>
+
+{% endblock %}

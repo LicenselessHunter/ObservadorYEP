@@ -1,0 +1,389 @@
+{% load static %} <!--Módulo para static files-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>{% block title %}{% endblock %}</title>
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"> <!--CDN para usar bootstrap-->
+
+	<link rel="stylesheet" href="{% static 'global.css' %}">
+	<link rel="stylesheet" href="{% static 'Table.css' %}">
+	<link rel="stylesheet" href="{% static 'requests_table.css' %}">
+	<link rel="stylesheet" href="{% static 'extra.css' %}">
+	<link rel="stylesheet" href="{% static 'Marketplace-Table.css' %}">
+	<link rel="stylesheet" href="{% static 'dashboard.css' %}">
+	<link rel="stylesheet" href="{% static 'home.css' %}">
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.1/chart.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.1/helpers.esm.min.js"></script>
+	<script src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"> </script>
+	<!--<script src="{% static 'fontawesomefree/js/all.min.js' %}"></script>
+	<link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">-->
+
+
+
+</head>
+
+<body>
+	<section id = "supbar">
+
+		<div id = "logo" style="padding: 5px;">
+			<img style="width: 120px; top: 100px;" src="/media/Logo.png">
+		</div>
+
+		<div id = "Table-Comands-Product" style="visibility: hidden;"> <!-- Controles de tabla producto-->
+
+			{% if request.user.profile.user_Type == "Trabajador" %}
+				<button class="dropdown-toggle" type="button" id="dropdownMenuProduct-Create" data-bs-toggle="dropdown" aria-expanded="false">
+					Crear
+				</button>
+
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuProduct-Create">
+					<li><a class = "dropdown-item" data-bs-toggle="modal" data-bs-target="#create-modal-product">Crear Producto</a></li>
+					<li><a class = "dropdown-item" data-bs-toggle="modal" data-bs-target="#define-child-modal">Crear PACK</a></li>
+				</ul>
+			{% endif %}
+
+		</div>
+
+
+		<div id = "User-Controls">
+			<a href="{% url 'Accounts:userProfile' user.profile.id %}" style="text-decoration:none">{{ user.username }}</a><!-- Este es un elemento que al presionarlo va a dirigir a la url equivalente a (Accounts/userProfile/"id del profile anclado al usuario que presiono el botón"). En otras palabras, se mandara al perfil del usuario actual-->
+
+			<a href="{% url 'Accounts:logout'%}" style="text-decoration:none">Cerrar sesión</a>
+
+		</div>
+
+		{% if request.user.profile.user_Type == "Trabajador" %}
+			<button id = "AddButtonMarketplace" style="visibility: hidden;" data-bs-toggle="modal" data-bs-target="#add-modal-marketplace">Crear</button>
+
+			
+		{% endif %}
+
+		<div id = "GROUPSALE_COMMANDS" style="visibility: hidden;">
+		
+			{% if request.user.profile.user_Type == "Trabajador" and Sales_group_instance.Compared == False and Sales_group_instance.created_by != request.user %}
+				<button id = "compare_sales_button" data-bs-toggle="modal" data-bs-target="#import-compareSales-modal">Comparar ventas</button>
+
+			{% endif %}
+
+
+			{% if request.user.profile.user_Type == "Administrador" and Sales_group_instance.Compared == True and Sales_group_instance.validation == False %}
+				<button id = "validate_sales_button" data-bs-toggle="modal" data-bs-target="#decide_salesGroup-modal">Decidir</button>
+
+				<button id = "compare_sales_button" data-bs-toggle="modal" data-bs-target="#import-compareSalesAdmin-modal">Comparar ventas</button>
+			{% endif %}
+
+		</div>
+
+		{% if request.user.profile.user_Type == "Trabajador" %}
+			<button id = add_sales_button style="visibility: hidden;" data-bs-toggle="modal" data-bs-target="#import-modal-sale">Ingresar ventas</button>
+
+		{% endif %}
+
+
+		{% if request.user.profile.user_Type == "Trabajador" %}
+
+			<button id = invite-button style="visibility: hidden;" data-bs-toggle="modal" data-bs-target="#invite-modal">Invitar <i class="fa-solid fa-paper-plane"></i></button>
+			
+		{% endif %}
+
+
+		<div id = "Statistics-Time-Filters" style="visibility: hidden;">
+			<form method="POST" style="display: flex; align-items: center; gap: 8px;">
+				{% csrf_token %}
+				<b>Desde</b> <input type="date" name="From_date">
+				<b>Hasta</b> <input type="date" name="To_date">
+				<button type="submit">Filtrar</button>
+				{% if FilterUsed == True %}
+					<b>Mostrando datos desde <text style = "color:#197ED2;">{{ fromDate }}</text> Hasta <text style = "color:#197ED2;">{{ toDate }}</text></b>
+				{% endif %}
+			</form>
+		</div>
+		
+		<div id = "Finalized-sales-Filters" style="visibility: hidden;">
+			<form method="POST" style="display: flex; align-items: center; gap: 8px;">
+				{% csrf_token %}
+				<b>Desde</b> <input type="date" name="From_date">
+				<b>Hasta</b> <input type="date" name="To_date">
+				<select name="marketplace_select_finalizedSales">
+					<option value="global">Global</option>
+					{% for marketplace in Marketplaces %}
+						<option value="{{ marketplace.Marketplace_name }}">{{ marketplace.Marketplace_name }}</option>
+					{% endfor %}
+				</select>
+				<button name = "finalized_sales_filter" type="submit">Filtrar</button>
+
+
+					{% if MarketplaceChoosed == True or DateFilterUsed == True %}
+						<b style="font-size: 12px;">Mostrando ventas {% if MarketplaceChoosed == True %} de {{ marketplace_selected }} {% endif %} {% if DateFilterUsed == True %} desde <text style = "color:#197ED2;">{{ fromDate }}</text> Hasta <text style = "color:#197ED2;">{{ toDate }}</text> {% endif %}</b>
+					{% endif %}
+				
+			</form>
+		</div>
+
+
+	</section>
+
+
+
+	<section id = "sidebar-nav">
+
+		<a href="{% url 'home'%}" style="text-decoration:none">Inicio</a>
+		
+		<!---- DROPDOWN PRODUCTOS ----->
+		<a class="dropdown-toggle" data-bs-auto-close="outside" style="text-decoration:none" type="button" id="dropdownMenuProduct" data-bs-toggle="dropdown" aria-expanded="false">
+			Productos
+		</a>
+
+		<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuProduct">
+			<li><a class="dropdown-item" href="{% url 'tables:products'%}" style="text-decoration:none">Catalogo de productos</a></li>
+
+			<li class="dropdown dropend">
+				<a class="dropdown-item dropdown-toggle" style="text-decoration:none" type="button" id="dropdownMenuProduct_requests" data-bs-toggle="dropdown" aria-expanded="false">
+					Solicitudes de productos
+				</a>
+
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuProduct_requests">
+					<li><a class="dropdown-item" href="{% url 'tables:unvalidated_products'%}" style="text-decoration:none">Solicitudes de creación</a></li>
+					<li><a class="dropdown-item" href="{% url 'tables:unvalidated_ModifyProduct_Requests'%}" style="text-decoration:none">Solicitudes de modificación</a></li>
+					<li><a class="dropdown-item" href="{% url 'tables:unvalidated_DeactivateProduct_Requests'%}" style="text-decoration:none">Solicitudes de desactivación</a></li>
+					<li><a class="dropdown-item" href="{% url 'tables:unvalidated_RestoreProduct_Requests'%}" style="text-decoration:none">Solicitudes de restauración</a></li>
+				</ul>
+			</li>
+
+			<li><a class="dropdown-item" href="{% url 'tables:inactive_products'%}" style="text-decoration:none">Productos desactivados</a></li>
+		</ul>
+
+
+		<!---- DROPDOWN MARKETPLACES ----->
+		<a class="dropdown-toggle" data-bs-auto-close="outside" style="text-decoration:none" type="button" id="dropdownMenuMarketplace" data-bs-toggle="dropdown" aria-expanded="false">
+			Canales
+		</a>
+
+		<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuMarketplace">
+			<li><a class="dropdown-item" href="{% url 'marketplaces:marketplaces'%}" style="text-decoration:none">Canales disponibles</a></li>
+
+			<li class="dropdown dropend">
+				<a class="dropdown-item dropdown-toggle" style="text-decoration:none" type="button" id="dropdownMenuMarketplace_requests" data-bs-toggle="dropdown" aria-expanded="false">
+					Solicitudes de canales de venta
+				</a>
+
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuMarketplace_requests">
+					<li><a class="dropdown-item" href="{% url 'marketplaces:unvalidated_marketplaces'%}" style="text-decoration:none">Solicitudes de creación</a></li>
+					<li><a class="dropdown-item" href="{% url 'marketplaces:unvalidated_ModifyMarketplace_Requests'%}" style="text-decoration:none">Solicitudes de modificación</a></li>
+					<li><a class="dropdown-item" href="{% url 'marketplaces:unvalidated_DeactivateMarketplace_Requests'%}" style="text-decoration:none">Solicitudes de desactivación</a></li>
+					<li><a class="dropdown-item" href="{% url 'marketplaces:unvalidated_RestoreMarketplace_Requests'%}" style="text-decoration:none">Solicitudes de restauración</a></li>
+				</ul>
+			</li>
+
+			<li><a class="dropdown-item" href="{% url 'marketplaces:inactive_marketplaces'%}" style="text-decoration:none">Canales desactivados</a></li>
+		</ul>
+
+
+		<!---- DROPDOWN VENTAS ----->
+		<a class="dropdown-toggle" data-bs-auto-close="outside" style="text-decoration:none" type="button" id="dropdownMenuSales" data-bs-toggle="dropdown" aria-expanded="false">
+			Ventas
+		</a>
+
+		<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuSales">
+			<li><a class="dropdown-item" href="{% url 'Sales:finalized_sales'%}" style="text-decoration:none">Ventas finalizadas</a></li>
+			<li><a class="dropdown-item" href="{% url 'Sales:sales_on_standby'%}" style="text-decoration:none">Ventas en espera</a></li>
+		</ul>
+
+
+
+		<!---- DROPDOWN USUARIOS ----->
+		<a class="dropdown-toggle" data-bs-auto-close="outside" style="text-decoration:none" type="button" id="dropdownMenuUsers" data-bs-toggle="dropdown" aria-expanded="false">
+			Usuarios
+		</a>
+
+		<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuUsers">
+			<li><a class="dropdown-item" href="{% url 'Accounts:users'%}" style="text-decoration:none">Usuarios disponibles</a></li>
+
+			<li class="dropdown dropend">
+				<a class="dropdown-item dropdown-toggle" style="text-decoration:none" type="button" id="dropdownMenuUsers_requests" data-bs-toggle="dropdown" aria-expanded="false">
+					Solicitudes de usuarios
+				</a>
+
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuUsers_requests">
+					<li><a class="dropdown-item" href="{% url 'Accounts:unvalidated_invitation_requests'%}" style="text-decoration:none">Invitaciones pendientes</a></li>
+					<li><a class="dropdown-item" href="{% url 'Accounts:unvalidated_DeactivateUser_Requests'%}" style="text-decoration:none">Solicitudes de desactivación</a></li>
+					<li><a class="dropdown-item" href="{% url 'Accounts:unvalidated_RestoreUser_Requests'%}" style="text-decoration:none">Solicitudes de restauración</a></li>
+				</ul>
+
+
+			</li>
+
+			<li><a class="dropdown-item" href="{% url 'Accounts:inactive_users'%}" style="text-decoration:none">Usuarios desactivados</a></li>
+
+		</ul>
+
+
+		<a href="{% url 'dashboard'%}" style="text-decoration:none">Dashboard</a>
+
+
+
+
+		<!---- DROPDOWN HISTORIAL DE VALIDACIONES ----->
+		<a class="dropdown-toggle" data-bs-auto-close="outside" style="text-decoration:none" type="button" id="dropdownMenuValidations" data-bs-toggle="dropdown" aria-expanded="false">
+			Historial de <br> validaciones
+		</a>
+
+		<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuValidations">
+
+			<li class="dropdown dropend">
+				<a class="dropdown-item dropdown-toggle" style="text-decoration:none" type="button" id="dropdown_validated_product_requests" data-bs-toggle="dropdown" aria-expanded="false">
+					Productos
+				</a>
+
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdown_validated_product_requests">
+					<li><a class="dropdown-item" href="{% url 'tables:validated_ModifyProduct_Requests'%}" style="text-decoration:none">Modificaciones validadas</a></li>
+					<li><a class="dropdown-item" href="{% url 'tables:validated_DeactivateProduct_Requests'%}" style="text-decoration:none">Desactivaciones validadas</a></li>
+					<li><a class="dropdown-item" href="{% url 'tables:validated_RestoreProduct_Requests'%}" style="text-decoration:none">Restauraciones validadas</a></li>
+				</ul>
+
+			</li>
+
+			<li class="dropdown dropend">
+				<a class="dropdown-item dropdown-toggle" style="text-decoration:none" type="button" id="dropdown_validated_marketplace_requests" data-bs-toggle="dropdown" aria-expanded="false">
+					Canales
+				</a>
+
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdown_validated_marketplace_requests">
+					<li><a class="dropdown-item" href="{% url 'marketplaces:validated_ModifyMarketplace_Requests'%}" style="text-decoration:none">Modificaciones validadas</a></li>
+					<li><a class="dropdown-item" href="{% url 'marketplaces:validated_DeactivateMarketplace_Requests'%}" style="text-decoration:none">Desactivaciones validadas</a></li>
+					<li><a class="dropdown-item" href="{% url 'marketplaces:validated_RestoreMarketplace_Requests'%}" style="text-decoration:none">Restauraciones validadas</a></li>
+				</ul>
+
+			</li>
+
+
+			<li class="dropdown dropend">
+				<a class="dropdown-item dropdown-toggle" style="text-decoration:none" type="button" id="dropdown_validated_user_requests" data-bs-toggle="dropdown" aria-expanded="false">
+					Usuarios
+				</a>
+
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdown_validated_user_requests">
+					<li><a class="dropdown-item" href="{% url 'Accounts:validated_invitation_requests'%}" style="text-decoration:none">Invitaciones validadas</a></li>
+					<li><a class="dropdown-item" href="{% url 'Accounts:validated_DeactivateUser_Requests'%}" style="text-decoration:none">Desactivaciones validadas</a></li>
+					<li><a class="dropdown-item" href="{% url 'Accounts:validated_RestoreUser_Requests'%}" style="text-decoration:none">Restauraciones validadas</a></li>
+				</ul>
+
+			</li>
+
+			<a class="dropdown-item" href="{% url 'Sales:validated_SalesGroups'%}">Grupos de ventas</a>
+
+		</ul>
+
+
+
+	</section>
+
+
+	{% if messages %}
+		{% for message in messages %}
+			<div id = messages class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+				{{ message }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		{% endfor %}
+	{% endif %}
+
+
+	<section id = "showcase">
+
+
+		{% if result %}
+			{% if result.has_errors %}
+
+				<div class="modal fade" id="import_errorModal" tabindex="-1" aria-labelledby="import_errorModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="import_errorModalLabel"><b>Informe de errorres</b></h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								Se encontraron los siguientes errores durante la importación del archivo excel
+								<br>
+								<br>
+
+								{% for line, errorsInRow in ErrorDict.items %}
+
+									<b>En línea {{ line|add:"1" }}</b> <!--Aquí se especifíca la línea de error, se le agrega 1 para que coincida con las líneas del excel.-->
+
+									{% for error in errorsInRow %} <!--Aquí se pondrán cada uno de los errores de una fila listados.-->
+										<li style="font-size: 0.9rem; padding-bottom: 10px;">{{ error }}</li>
+									{% endfor %}
+									<br>
+
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+				</div>
+
+			{% endif %}
+
+		{% endif %}
+
+
+		{% if result %}
+			{% if result.has_errors %}
+
+				<div class="modal fade" id="comparison_import_errorModal" tabindex="-1" aria-labelledby="import_errorModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="import_errorModalLabel"><b>Informe de errorres</b></h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								Se encontraron los siguientes errores durante la comparación
+								<br>
+								<br>
+
+								{% for line, errorsInRow in ErrorDict.items %}
+
+									<b>En línea {{ line|add:"1" }}</b> <!--Aquí se especifíca la línea de error, se le agrega 1 para que coincida con las líneas del excel.-->
+
+									{% for error in errorsInRow %} <!--Aquí se pondrán cada uno de los errores de una fila listados.-->
+										<li style="font-size: 0.9rem; padding-bottom: 10px;">{{ error }}</li>
+									{% endfor %}
+									<br>
+
+								{% endfor %}
+
+								{% if Same_sales_quantity == False %}
+								
+									<b>Su archivo de comparación no contiene la misma cantidad de registros de ventas que el grupo que desea comparar</b>
+
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+
+			{% endif %}
+
+		{% endif %}
+
+		{% block content %}
+		{% endblock %}
+	</section>
+
+	<footer style="margin-bottom: 100px">
+		
+	</footer>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<script src="{% static 'supBar.js' %}"></script>
+
+</body>
+
+</body>
+</html>

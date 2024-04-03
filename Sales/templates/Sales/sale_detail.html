@@ -1,0 +1,42 @@
+{% extends 'global.html' %}
+{% block title %}Detalle de venta{% endblock %}
+
+{% block content %}
+
+<div class = "VerticalCenter_container"> <!--ESTE CONTAINER EXISTE CON EL ÚNICO PROPOSITO DE CENTRAR VERTICALMENTE LA SECCIÓN INDIVIDUAL-->
+	<div class="individualSection">
+
+		<div class = "individualSection_Title">
+			<h2><b>Detalle de venta</b></h2>
+		</div>
+
+		<div class="individualSection_Body">
+
+			<p><img class = "individualSection_image" src="{{ sale.SKU.product_image.url }}"></p>
+
+			<ul class = "object_Text" style="list-style: none;">
+				<li><b>ID:</b> {{ sale.id }}</li>
+				<li><b>SKU:</b> {{ sale.SKU }}</li>
+				<li><b>Descripción:</b> {{ sale.SKU.Description }}</li>
+				<li><b>Tipo de producto:</b> {{ sale.SKU.Product_type }}</li>
+				<li><b>N° Venta:</b> {{ sale.sale_number }}</li>
+				<li><b>Venta bruta:</b> {{ sale.gross_sales}}</li>
+				<li><b>Fecha de venta:</b> {{ sale.sale_date }}</li>
+				<li><b>Cantidad:</b> {{ sale.Cantidad }}</li>
+				<li><b>Comisión:</b> {{ sale.commission }}</li>
+				<li><b>Costo de envío:</b> {{ sale.shipping_cost }}</li>
+				<li><b>Canal de venta:</b> {{ sale.Sale_group.sale_marketplace}}</li>
+				
+			</ul>
+
+			<ul class = "user_Text" style="list-style: none;">
+
+				<li><b>Ingresado por:</b> <p>{{ sale.Sale_group.created_by }} dentro del grupo de venta n° <a style="text-decoration:none" href="{% url 'Sales:SalesGroup_detail' sale.Sale_group.id %}">{{ sale.Sale_group.id }}</a></p></li>
+
+			</ul>
+		</div>
+
+	</div>
+</div>
+
+{% endblock %}

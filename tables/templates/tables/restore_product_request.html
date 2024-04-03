@@ -1,0 +1,51 @@
+{% extends 'global.html' %}
+{% block title %}Solicitar restaurar producto{% endblock %}
+
+{% block content %}
+
+<div class = "VerticalCenter_container"> <!--ESTE CONTAINER EXISTE CON EL ÚNICO PROPOSITO DE CENTRAR VERTICALMENTE LA SECCIÓN INDIVIDUAL-->
+	<div class="individualSection">
+		<div class = "individualSection_Title">
+			<h2><b>Solicitar restauración de producto</b></h2>
+		</div>
+
+		<div class="individualSection_Body">
+			<h4>Está a punto de solicitar la restauración del siguiente producto</h4>
+
+			<p><img class = "individualSection_image" src="{{ product.product_image.url }}"></p>
+
+			<ul class = "object_Text" style="list-style: none;">
+				<li><b>SKU:</b> {{ product.SKU }}</li>
+				<li><b>Descripción:</b> {{ product.Descripcion }}</li>
+				<li><b>Clasificación:</b> {{ product.classification }}</li>
+				<li><b>Tipo de producto:</b> {{ product.Product_type }}</li>
+			</ul>
+
+			{% if PACKInformation %}
+				<h2 class = "PACK_content_title"><b>Contenido del PACK</b></h2>
+
+				
+				{% for PACKInformation in PACKInformation %}
+					<ul class = "PACK_content" style="list-style: none;">
+						<li><b>SKU:</b> {{ PACKInformation.SKU_CHILD }}</li>
+						<li><b>Descripción:</b> {{ PACKInformation.SKU_CHILD.Description }}</li>
+						<li><b>Cantidad:</b> {{ PACKInformation.CHILD_QUANTITY }}</li>
+					</ul>
+				{% endfor %}
+				
+			{% endif %}			
+
+			<div class="individualSection_Buttons">
+				<form method="POST">
+					{% csrf_token %}
+					<button name = "restore_product_request" class = "Confirm_Button">Solicitar</button>
+				</form>
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+{% endblock %}
